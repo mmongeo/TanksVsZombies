@@ -1,4 +1,4 @@
-package cr.ac.ucr.ecci.tanksvszombies;
+package cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 import android.os.Bundle;
