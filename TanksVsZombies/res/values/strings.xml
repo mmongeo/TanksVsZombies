@@ -1,16 +1,35 @@
 <resources>
 
     <string name="app_name">TanksVsZombies</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_section3">Section 3</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section1">Section 1</string>
-    <string name="title_activity_main_menu">MainMenu</string>
-    <string name="highScores">High Scores</string>
-    <string name="newGame">New Game</string>
-    <string name="store">Store</string>
-    <string name="mainMenu">Main Menu</string>
+    <string name="title_activity_game">GameActivity</string>
+    <string name="game_activity_tank_image_description">Tanque</string>
+    <string name="game_activity_shield_image_description">Escudo</string>
+    <string name="game_activity_zombie_image_description">Zombie</string>
+    <string name="game_activity_score_text">123 456 789</string>
+    <string name="store_activity_no_image_description">Imagen</string>
+    <string name="store_activity_default_text">Nombre de Objeto</string>
+    <string name="store_activity_default_price">$99.99</string>
+    <string name="title_storeitem_detail">StoreItem Detail</string>
+    <string name="title_storeitem_list">Game Store</string>
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum quis sodales arcu. Nullam eget viverra elit. In semper tristique quam eu tristique. Etiam nec diam vel eros vehicula vehicula. Cras vulputate quam a dui auctor fermentum. Integer nec sodales turpis. Proin interdum, nibh convallis dictum suscipit, est eros vehicula felis, in malesuada diam massa et massa. Ut lacinia lectus sed tortor scelerisque a tincidunt justo vestibulum. Phasellus vel pretium tellus. Donec condimentum blandit eleifend.
+        
+Aliquam sodales, eros id auctor auctor, magna diam dapibus lorem, et ultrices metus sem ac diam. Maecenas congue, felis et sagittis malesuada, massa leo euismod libero, ac ornare nisl ipsum quis est. Sed vitae orci non massa iaculis interdum. In ac dui a turpis ultrices condimentum sed id urna. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Phasellus a magna tortor, at viverra quam. Praesent eu risus ut metus viverra volutpat. Suspendisse eget est ut leo consequat placerat ac convallis neque. Cras sagittis malesuada lectus at egestas. Ut molestie lacus id neque lacinia sed mattis risus consequat. Donec vitae enim eget mi eleifend interdum.
+
+Aenean eget sapien magna, vel fermentum leo. Integer quis arcu vel lacus cursus ullamcorper. Duis sodales aliquam sapien, sed porta augue euismod placerat. Suspendisse ut risus massa. Mauris interdum aliquam lacus pulvinar molestie. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Praesent elit elit, scelerisque vitae congue id, blandit non turpis. In sollicitudin mattis risus, vel dapibus nisi dignissim quis. Nulla non semper neque. Donec fermentum rutrum sem sit amet consequat. Aliquam nec nibh orci, nec pulvinar arcu. Aliquam ut nibh sit amet diam ornare mattis non et lorem. Maecenas nibh lorem, euismod eu semper eu, rutrum at libero.
+
+Quisque et justo felis. Etiam sit amet aliquet orci. Donec faucibus enim quis dui malesuada at interdum arcu congue. Aenean a velit quis ante aliquam malesuada. Ut varius, lectus sed mattis eleifend, dui libero pretium tellus, ac ornare ante purus at erat. Mauris vel tincidunt erat. Sed sed tortor purus, luctus porttitor velit. Curabitur ornare tempus neque eget dignissim. Donec sit amet erat tellus. Fusce id neque id justo blandit dignissim. Quisque sit amet convallis risus. Suspendisse potenti. Integer dictum sagittis eros, ac venenatis ligula semper consequat. Nulla auctor tortor vel justo viverra laoreet. Duis bibendum massa sapien, vel laoreet ipsum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+
+Maecenas hendrerit dolor quis lacus faucibus ac blandit odio semper. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Sed vitae enim at neque fermentum lobortis in posuere lorem. Phasellus mollis egestas cursus. Proin augue lorem, scelerisque ut aliquet commodo, molestie in mi. Praesent eu turpis metus, vitae vehicula massa. Donec neque felis, imperdiet vel pharetra in, rutrum in velit. Fusce in ipsum nisl, eget pharetra lacus. Duis nec dui tortor. Donec et metus lectus. In vel sodales nulla. In in dolor odio.
+
+Aenean vitae nibh quis quam imperdiet volutpat. Nullam lobortis ipsum et turpis sollicitudin interdum. Suspendisse potenti. Donec a risus euismod est egestas consectetur. In non erat sed ipsum condimentum eleifend. Proin dapibus aliquam diam egestas tristique. Nam massa neque, imperdiet sit amet pharetra ut, lobortis non ante. Vestibulum ac odio purus, sed rutrum purus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Quisque velit erat, sagittis vel venenatis sit amet, tempor in lorem. Fusce at mi risus. Vestibulum est nibh, tincidunt vel faucibus eu, pellentesque quis arcu.
+
+Donec commodo venenatis leo, vitae fermentum magna semper eget. Duis accumsan tincidunt tristique. Nunc id orci odio. Nullam vitae risus lorem. Nam sit amet sodales libero. Aenean odio leo, malesuada quis ornare non, elementum in quam. Sed orci velit, lobortis eget tincidunt in, rutrum sit amet tellus. Etiam id congue mi. Duis et malesuada nunc. Vestibulum viverra mollis mi eu eleifend. Etiam malesuada purus nec lectus faucibus eget lobortis ligula porttitor. Aliquam id felis massa. Morbi pulvinar metus eu orci luctus commodo. Etiam dignissim, purus sit amet accumsan tincidunt, lectus ligula semper lorem, at egestas justo sapien ac leo.
+
+Aenean lacinia, quam ullamcorper vehicula tempus, nibh urna viverra leo, et semper odio mauris ut orci. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce egestas ligula vitae lacus pharetra sit amet pretium metus condimentum. Donec ut malesuada magna. Vivamus faucibus, magna eget vulputate ultricies, nunc sapien placerat odio, a faucibus dui magna non tortor. Mauris quis urna id nunc mollis bibendum tincidunt quis urna. Pellentesque malesuada imperdiet ligula pellentesque imperdiet. Ut aliquam vehicula orci, congue interdum urna rhoncus sed. Quisque aliquam feugiat vestibulum. Nam ac erat nisi. Vivamus nec tortor mauris.
+
+Quisque at tempus ligula. Pellentesque risus magna, accumsan et interdum ac, rhoncus ac felis. Maecenas non porta lectus. Aliquam a hendrerit diam. Sed aliquam quam vitae urna egestas malesuada. Etiam rutrum ligula vitae est porta sed dictum quam dictum. Sed eros odio, lobortis at ullamcorper in, ultricies eget sem. In feugiat venenatis tortor sed volutpat. Morbi vitae lectus ac augue porttitor scelerisque id in dui. Fusce metus orci, dapibus vitae tempor sed, porttitor vel tellus. Maecenas luctus augue sed velit ultrices non feugiat nibh bibendum. Fusce rhoncus lobortis lacus in porta. Aliquam faucibus libero et mauris tincidunt volutpat.
+
+Nulla nibh felis, congue sit amet viverra ac, molestie id purus. Vestibulum dictum pulvinar commodo. Vestibulum in nisl nibh, sed bibendum libero. Duis quis ante libero. Aenean imperdiet sollicitudin nulla, id luctus magna convallis rhoncus. Maecenas congue condimentum mattis. Donec a iaculis augue. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam ipsum ipsum, sodales varius facilisis quis, aliquet in nisi. Nam vitae nibh magna, in tempus velit.</string>
 
 </resources>
