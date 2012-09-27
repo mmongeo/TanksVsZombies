@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="game_activity_background">#F5B800</color>
+    <color name="game_activity_high_score">#0066CC</color>
+    <color name="game_activity_high_score_shadow">#0066CC</color>
+    
+</resources>
