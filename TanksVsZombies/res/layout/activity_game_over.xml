@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000" >
+
+    <TextView
+        android:id="@+id/game_over_tittle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="@string/game_over_tittle"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/puntuacion_str"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/game_over_tittle"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="27dp"
+        android:layout_marginTop="31dp"
+        android:text="@string/game_over_puntuacion"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/game_over_puntuacion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/puntuacion_str"
+        android:layout_alignBottom="@+id/puntuacion_str"
+        android:layout_marginRight="34dp"
+        android:layout_toLeftOf="@+id/puntuacion_str"
+        android:text="@string/game_over_puntuacionStr"
+        android:textColor="#ffffff" />
+
+    <TextView
+        android:id="@+id/game_over_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/game_over_puntuacion"
+        android:layout_marginTop="31dp"
+        android:layout_marginRight="20dp"
+        android:layout_alignLeft="@+id/game_over_puntuacion"
+        android:text="@string/game_over_text"
+        android:textColor="#ffffff" />
+
+    <Button
+        android:id="@+id/game_over_share_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_below="@+id/game_over_puntuacion"
+        android:layout_marginLeft="5dp"
+        android:layout_marginTop="30dp"
+        android:layout_toRightOf="@+id/game_over_text"
+        android:layout_alignLeft="@+id/puntuacion_str"
+        android:background="@drawable/button_facebook"
+        android:text="@string/game_over_textButton"
+        android:textColor="#FFFFFF" />
+
+</RelativeLayout>
