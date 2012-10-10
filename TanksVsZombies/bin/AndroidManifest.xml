@@ -3,10 +3,7 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="15"
-        android:minSdkVersion="10"
-        android:targetSdkVersion="15" />
+    <uses-sdk android:minSdkVersion="15" />
 
     <application
         android:icon="@drawable/ic_launcher"
@@ -20,8 +17,6 @@
         <activity
             android:name=".ui.gameStore.StoreItemListActivity"
             android:label="@string/title_storeitem_list" >
-            android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
