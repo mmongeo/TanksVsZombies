@@ -1,0 +1,44 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/animation_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:src="@drawable/logo" />
+
+    <TextView
+        android:id="@+id/animation_text_continuar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="42dp"
+        android:text="@string/animation_text_advance"
+        tools:context=".Animation" />
+
+    <ImageView
+        android:id="@+id/animation_tank"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/animation_text_continuar"
+        android:layout_alignLeft="@+id/animation_logo"
+        android:layout_marginBottom="85dp"
+        android:layout_marginLeft="37dp"
+        android:src="@drawable/frame0" />
+
+    <ImageView
+        android:id="@+id/animation_zombie"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/animation_text_continuar"
+        android:layout_alignRight="@+id/animation_logo"
+        android:layout_marginBottom="67dp"
+        android:src="@drawable/zombie0" />
+
+</RelativeLayout>

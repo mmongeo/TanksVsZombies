@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <ImageView
+        android:id="@+id/game_store_list_item_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:contentDescription="@string/store_activity_no_image_description"
+        android:src="@drawable/store_item_default_mini" />
+
+    <TextView
+        android:id="@+id/game_store_list_item_object_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_alignTop="@+id/game_store_list_item_image"
+        android:text="@string/store_activity_default_text"
+        android:layout_toRightOf="@+id/game_store_list_item_image"
+        android:layout_margin="10dp" />
+    
+    <TextView android:id="@+id/game_store_list_item_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/store_activity_default_price"
+        android:layout_below="@+id/game_store_list_item_object_name"
+        android:layout_alignLeft="@+id/game_store_list_item_object_name"
+        android:layout_marginLeft="10dp"/>
+
+</RelativeLayout>
