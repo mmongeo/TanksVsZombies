@@ -27,3 +27,6 @@
 *.maf
 *.mtc
 *.mtc0
+*.class
+*.apk
+bin/

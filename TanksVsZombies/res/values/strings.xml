@@ -31,5 +31,24 @@ Aenean lacinia, quam ullamcorper vehicula tempus, nibh urna viverra leo, et semp
 Quisque at tempus ligula. Pellentesque risus magna, accumsan et interdum ac, rhoncus ac felis. Maecenas non porta lectus. Aliquam a hendrerit diam. Sed aliquam quam vitae urna egestas malesuada. Etiam rutrum ligula vitae est porta sed dictum quam dictum. Sed eros odio, lobortis at ullamcorper in, ultricies eget sem. In feugiat venenatis tortor sed volutpat. Morbi vitae lectus ac augue porttitor scelerisque id in dui. Fusce metus orci, dapibus vitae tempor sed, porttitor vel tellus. Maecenas luctus augue sed velit ultrices non feugiat nibh bibendum. Fusce rhoncus lobortis lacus in porta. Aliquam faucibus libero et mauris tincidunt volutpat.
 
 Nulla nibh felis, congue sit amet viverra ac, molestie id purus. Vestibulum dictum pulvinar commodo. Vestibulum in nisl nibh, sed bibendum libero. Duis quis ante libero. Aenean imperdiet sollicitudin nulla, id luctus magna convallis rhoncus. Maecenas congue condimentum mattis. Donec a iaculis augue. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nullam ipsum ipsum, sodales varius facilisis quis, aliquet in nisi. Nam vitae nibh magna, in tempus velit.</string>
-
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_high_scores">HighScoresActivity</string>
+    <string name="high_score_tittle">HIGHSCORES</string>
+    <string name="highscore_user_name">USUARIO</string>
+    <string name="highscore_puntuacion_str">PUNTUACION</string>
+    <string name="list_item_username">Usuario 1</string>
+    <string name="list_item_score">Puntuación</string>
+    <string name="title_activity_game_over">GameOverActivity</string>
+    <string name="game_over_tittle">GAME OVER!!!</string>
+    <string name="game_over_text">Compartelo en</string>
+    <string name="game_over_textButton">Facebook</string>
+    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_activity_animation">Animation</string>
+    <string name="animation_text_advance">Toque la pantalla para continuar</string>
+    <string name="game_over_puntuacionStr">Puntuacion</string>
+    <string name="game_over_puntuacion">123456789</string>
+    <string name="store">Store</string>
+    <string name="mainMenu">Main Menu</string>
+	<string name="newGame">New Game</string>
+	<string name="highScores">High Scores</string>
 </resources>
