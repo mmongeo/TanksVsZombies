@@ -47,5 +47,8 @@ Nulla nibh felis, congue sit amet viverra ac, molestie id purus. Vestibulum dict
     <string name="animation_text_advance">Toque la pantalla para continuar</string>
     <string name="game_over_puntuacionStr">Puntuacion</string>
     <string name="game_over_puntuacion">123456789</string>
-
+    <string name="store">Store</string>
+    <string name="mainMenu">Main Menu</string>
+	<string name="newGame">New Game</string>
+	<string name="highScores">High Scores</string>
 </resources>
