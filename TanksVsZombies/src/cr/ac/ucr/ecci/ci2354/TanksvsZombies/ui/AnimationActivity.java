@@ -1,23 +1,50 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui;
 
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R.anim;
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R.id;
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R.layout;
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R.menu;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MotionEvent;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.TextView;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 
 public class AnimationActivity extends Activity {
-
+	TextView mMensaje;
+	Animation mAnimacionTexto;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_animation);
+		mMensaje = (TextView) findViewById(R.id.animation_text_continuar);
+		mAnimacionTexto = AnimationUtils.loadAnimation(getApplicationContext(), R.anim.animacion_texto);
+		mAnimacionTexto.setAnimationListener(new AnimationListener() {
+			
+			@Override
+			public void onAnimationStart(Animation animation) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				mMensaje.startAnimation(mAnimacionTexto);
+				
+			}
+		});
+		mMensaje.startAnimation(mAnimacionTexto);
+
 	}
 
 	@Override
@@ -35,6 +62,14 @@ public class AnimationActivity extends Activity {
 		// object.
 		AnimationDrawable anim = (AnimationDrawable) imageView.getDrawable();
 		anim.start();
+	}
+
+	@Override
+	public boolean onTouchEvent(MotionEvent event) {
+		if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+			startActivity(new Intent(getApplicationContext(), MainMenu.class));
+		}
+		return super.onTouchEvent(event);
 	}
 
 	@Override
