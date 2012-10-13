@@ -42,7 +42,7 @@ Nulla nibh felis, congue sit amet viverra ac, molestie id purus. Vestibulum dict
     <string name="game_over_tittle">GAME OVER!!!</string>
     <string name="game_over_text">Compartelo en</string>
     <string name="game_over_textButton">Facebook</string>
-    <string name="title_activity_splash">SplashActivity</string>
+    <string name="title_game">Tanks Vs Zombies</string>
     <string name="title_activity_animation">Animation</string>
     <string name="animation_text_advance">Toque la pantalla para continuar</string>
     <string name="game_over_puntuacionStr">Puntuacion</string>

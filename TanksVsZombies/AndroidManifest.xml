@@ -11,12 +11,24 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name="cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameActivity"
-            android:label="@string/title_activity_game"
+            android:label="@string/title_game"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name=".ui.gameStore.StoreItemListActivity"
-            android:label="@string/title_storeitem_list" >
+            android:label="@string/title_game" >
+        </activity>
+        <activity
+            android:name=".ui.HighScoresActivity"
+            android:label="@string/title_game" >
+        </activity>
+        <activity
+            android:name=".ui.GameOverActivity"
+            android:label="@string/title_game" >
+        </activity>
+        <activity
+            android:name=".ui.SplashActivity"
+            android:label="@string/title_game" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -24,54 +36,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".HighScoresActivity"
-            android:label="@string/title_activity_high_scores" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".GameOverActivity"
-            android:label="@string/title_activity_game_over" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".SplashActivity"
-            android:label="@string/title_activity_splash" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".AnimationActivity"
-            android:label="@string/title_activity_animation" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:name=".ui.AnimationActivity"
+            android:label="@string/title_game" >
         </activity>
         <activity
             android:name=".ui.MainMenu"
-            android:label="@string/mainMenu" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            android:label="@string/title_game" >
         </activity>
-
         <activity
             android:name=".ui.gameStore.StoreItemDetailActivity"
-            android:label="@string/title_storeitem_detail" >
+            android:label="@string/title_game" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".StoreItemListActivity" />
