@@ -3,24 +3,18 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk android:minSdkVersion="15" />
+    <uses-sdk
+        android:minSdkVersion="10"
+        android:targetSdkVersion="16" />
 
     <application
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/Theme.Sherlock" >
         <activity
             android:name="cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameActivity"
             android:label="@string/title_game"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
-        </activity>
-        <activity
-            android:name=".ui.gameStore.StoreItemListActivity"
-            android:label="@string/title_game" >
-        </activity>
-        <activity
-            android:name=".ui.HighScoresActivity"
-            android:label="@string/title_game" >
         </activity>
         <activity
             android:name=".ui.GameOverActivity"
@@ -44,11 +38,16 @@
             android:label="@string/title_game" >
         </activity>
         <activity
-            android:name=".ui.gameStore.StoreItemDetailActivity"
-            android:label="@string/title_game" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".StoreItemListActivity" />
+            android:name=".ui.GameOverActivityity"
+            android:label="@string/title_activity_game_over" >
+        </activity>
+        <activity
+            android:name=".ui.MainActvity"
+            android:label="@string/title_activity_main_menu" >
+        </activity>
+        <activity
+            android:name=".ui.MainMenuFragment"
+            android:label="@string/title_activity_main_menu_fragment" >
         </activity>
     </application>
 

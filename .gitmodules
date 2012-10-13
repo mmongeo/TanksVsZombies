@@ -1,3 +1,4 @@
 [submodule "AndEngine"]
 	path = AndEngine
-	url = https://github.com/nicolasgramlich/AndEngine.git
+	url = https://github.com/nicolasgramlich/AndEngine.git.
+	ignore = dirty
