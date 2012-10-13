@@ -1,11 +1,12 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui;
 
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
-import android.app.Activity;
 import android.os.Bundle;
-import android.view.Menu;
 
-public class GameActivity extends Activity {
+import com.actionbarsherlock.app.SherlockActivity;
+
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
+
+public class GameActivity extends SherlockActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -13,9 +14,4 @@ public class GameActivity extends Activity {
         setContentView(R.layout.activity_game);
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_game, menu);
-        return true;
-    }
 }

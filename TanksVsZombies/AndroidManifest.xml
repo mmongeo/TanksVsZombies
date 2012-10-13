@@ -9,20 +9,20 @@
 
     <application
         android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
+        android:label="@string/game_title"
         android:theme="@style/Theme.Sherlock" >
         <activity
             android:name="cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameActivity"
-            android:label="@string/title_game"
+            android:label="@string/game_title"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
             android:name=".ui.GameOverActivity"
-            android:label="@string/title_game" >
+            android:label="@string/game_title" >
         </activity>
         <activity
             android:name=".ui.SplashActivity"
-            android:label="@string/title_game" >
+            android:label="@string/game_title" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -31,23 +31,23 @@
         </activity>
         <activity
             android:name=".ui.AnimationActivity"
-            android:label="@string/title_game" >
+            android:label="@string/game_title" >
         </activity>
         <activity
             android:name=".ui.MainMenu"
-            android:label="@string/title_game" >
+            android:label="@string/game_title" >
         </activity>
         <activity
             android:name=".ui.GameOverActivityity"
-            android:label="@string/title_activity_game_over" >
+            android:label="@string/game_title" >
         </activity>
         <activity
-            android:name=".ui.MainActvity"
-            android:label="@string/title_activity_main_menu" >
+            android:name=".ui.MainMenuActvity"
+            android:label="@string/game_title" >
         </activity>
         <activity
             android:name=".ui.MainMenuFragment"
-            android:label="@string/title_activity_main_menu_fragment" >
+            android:label="@string/game_title" >
         </activity>
     </application>
 

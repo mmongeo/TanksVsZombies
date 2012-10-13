@@ -1,19 +1,20 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.os.Bundle;
-import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockActivity;
+
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 
-public class AnimationActivity extends Activity {
+public class AnimationActivity extends SherlockActivity {
 	TextView mMensaje;
 	Animation mAnimacionTexto;
 
@@ -67,14 +68,10 @@ public class AnimationActivity extends Activity {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-			startActivity(new Intent(getApplicationContext(), MainMenu.class));
+			startActivity(new Intent(getApplicationContext(), MainMenuActvity.class));
 		}
 		return super.onTouchEvent(event);
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_animation, menu);
-		return true;
-	}
+
 }

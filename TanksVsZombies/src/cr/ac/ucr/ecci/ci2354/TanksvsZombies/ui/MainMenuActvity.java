@@ -13,7 +13,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 
-public class MainActvity extends SherlockFragmentActivity {
+public class MainMenuActvity extends SherlockFragmentActivity {
 
 	public static final String TABS[] = { "Menú Principal", "Puntajes Altos" };
 

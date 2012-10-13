@@ -3,12 +3,16 @@
     <!-- General -->
     <string name="app_name">TanksVsZombies</string>
     <string name="menu_settings">Settings</string>
+    <string name="game_title">Tanks vs Zombies</string>
 
     <!-- Títulos de actividades -->
     <string name="title_activity_game">GameActivity</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="title_activity_high_scores">HighScoresActivity</string>
     <string name="title_activity_main_menu">Menú Principal</string>
+    <string name="title_activity_main_menu_fragment">MainMenuFragment</string>
+    <string name="title_activity_game_over">GameOverActivity</string>
+    <string name="title_activity_animation">Animation</string>
 
     <!-- GameActivity -->
     <string name="game_activity_tank_image_description">Tanque</string>
@@ -20,23 +24,20 @@
     <string name="main_activity_new_game">Juego Nuevo</string>
     <string name="main_activity_store">Tienda</string>
 
-    <!-- ??? -->
-    <string name="highscore_user_name">USUARIO</string>
-    <string name="highscore_puntuacion_str">PUNTUACION</string>
-    <string name="high_score_tittle">HIGHSCORES</string>
-    <string name="list_item_username">Usuario 1</string>
-    <string name="list_item_score">Puntuación</string>
-    <string name="title_activity_game_over">GameOverActivity</string>
+    <!-- HighScoresFragment -->
+    <string name="highscore_user_name">Usuario</string>
+    <string name="highscore_puntuacion_str">Puntuación</string>
+    <string name="high_score_tittle">Highscores</string>
+    <string name="highScores">High Scores</string>
+
+    <!-- GameOverActivity -->
     <string name="game_over_tittle">GAME OVER!!!</string>
     <string name="game_over_text">Compartelo en</string>
     <string name="game_over_textButton">Facebook</string>
-    <string name="title_game">Tanks Vs Zombies</string>
-    <string name="title_activity_animation">Animation</string>
+
+    <!-- ??? -->
     <string name="animation_text_advance">Toque la pantalla para continuar</string>
     <string name="game_over_puntuacionStr">Puntuacion</string>
     <string name="game_over_puntuacion">123456789</string>
-    <string name="highScores">High Scores</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="title_activity_main_menu_fragment">MainMenuFragment</string>
 
 </resources>

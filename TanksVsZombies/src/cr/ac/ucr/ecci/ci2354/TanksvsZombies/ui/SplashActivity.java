@@ -1,18 +1,19 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+
+import com.actionbarsherlock.app.SherlockActivity;
+
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 
-public class SplashActivity extends Activity {
+public class SplashActivity extends SherlockActivity {
 	Handler mHandler = new Handler();
 	ImageView mTittle;
 	Animation mAnimationSplash;
@@ -43,12 +44,6 @@ public class SplashActivity extends Activity {
 			}
 		});
 		mTittle.startAnimation(mAnimationSplash);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_splash, menu);
-		return true;
 	}
 
 	@Override
