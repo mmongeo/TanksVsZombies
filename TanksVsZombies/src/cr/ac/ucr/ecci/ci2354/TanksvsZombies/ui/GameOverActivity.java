@@ -1,5 +1,8 @@
-package cr.ac.ucr.ecci.ci2354.TanksvsZombies;
+package cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui;
 
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R.layout;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R.menu;
 import android.os.Bundle;
 import android.app.Activity;
 import android.view.Menu;
