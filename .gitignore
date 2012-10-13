@@ -29,4 +29,5 @@
 *.mtc0
 *.class
 *.apk
+gen/
 bin/

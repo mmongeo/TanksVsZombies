@@ -60,6 +60,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".ui.MainMenu"
+            android:label="@string/mainMenu" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".ui.gameStore.StoreItemDetailActivity"
             android:label="@string/title_storeitem_detail" >
             <meta-data
