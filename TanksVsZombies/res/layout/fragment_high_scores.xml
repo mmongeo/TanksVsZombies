@@ -1,45 +1,19 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000" >
-
-    <TextView
-        android:id="@+id/high_scores_tittle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:text="@string/high_score_tittle"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#ffffff" />
-
-    <TextView
-        android:id="@+id/highscore_user_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/high_scores_tittle"
-        android:text="@string/highscore_user_name"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#2ECCFA" />
+    android:layout_height="match_parent" >
 
     <ListView
-        android:id="@+id/higscores_list"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@+id/highscore_user_name" >
-    </ListView>
+        android:id="@id/android:list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 
     <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
+        android:id="@id/android:empty"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/higscores_list"
-        android:layout_alignLeft="@+id/high_scores_tittle"
-        android:layout_marginLeft="56dp"
-        android:text="@string/highscore_puntuacion_str"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:textColor="#2ECCFA" />
+        android:gravity="center_horizontal"
+        android:padding="20dp"
+        android:text="@string/high_scores_fragment_empty" />
 
-</RelativeLayout>
+</LinearLayout>

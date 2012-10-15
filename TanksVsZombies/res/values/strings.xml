@@ -25,10 +25,7 @@
     <string name="main_activity_store">Tienda</string>
 
     <!-- HighScoresFragment -->
-    <string name="highscore_user_name">Usuario</string>
-    <string name="highscore_puntuacion_str">Puntuación</string>
-    <string name="high_score_tittle">Highscores</string>
-    <string name="highScores">High Scores</string>
+	<string name="high_scores_fragment_empty">No hay puntajes registrados</string>
 
     <!-- GameOverActivity -->
     <string name="game_over_tittle">GAME OVER!!!</string>

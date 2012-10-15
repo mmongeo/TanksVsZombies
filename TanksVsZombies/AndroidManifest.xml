@@ -8,6 +8,7 @@
         android:targetSdkVersion="16" />
 
     <application
+        android:name="cr.ac.ucr.ecci.ci2354.TanksvsZombies.App"
         android:icon="@drawable/ic_launcher"
         android:label="@string/game_title"
         android:theme="@style/Theme.Sherlock" >
