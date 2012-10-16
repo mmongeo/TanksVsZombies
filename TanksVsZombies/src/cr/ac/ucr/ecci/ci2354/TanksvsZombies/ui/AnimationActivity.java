@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockActivity;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.Services.ConnectServiceActivity;
 
 public class AnimationActivity extends SherlockActivity {
 	TextView mMensaje;
@@ -68,7 +69,7 @@ public class AnimationActivity extends SherlockActivity {
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
-			startActivity(new Intent(getApplicationContext(), MainMenuActvity.class));
+			startActivity(new Intent(getApplicationContext(), GameOverActivity.class));
 		}
 		return super.onTouchEvent(event);
 	}
