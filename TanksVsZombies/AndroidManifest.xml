@@ -20,10 +20,6 @@
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
         </activity>
         <activity
-            android:name=".ui.GameOverActivity"
-            android:label="@string/game_title" >
-        </activity>
-        <activity
             android:name=".ui.SplashActivity"
             android:label="@string/game_title" >
             <intent-filter>
@@ -41,7 +37,7 @@
             android:label="@string/game_title" >
         </activity>
         <activity
-            android:name=".ui.GameOverActivityity"
+            android:name=".ui.GameOverActivity"
             android:label="@string/game_title" >
         </activity>
         <activity
@@ -50,6 +46,10 @@
         </activity>
         <activity
             android:name=".ui.MainMenuFragment"
+            android:label="@string/game_title" >
+        </activity>
+        <activity
+            android:name=".game.GameActivity"
             android:label="@string/game_title" >
         </activity>
         <activity
