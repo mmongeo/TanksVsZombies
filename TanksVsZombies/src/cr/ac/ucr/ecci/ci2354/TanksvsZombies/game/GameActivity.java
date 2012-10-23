@@ -1,6 +1,7 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.game;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
@@ -56,12 +57,12 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 	private BitmapTextureAtlas mBitmapTextureAtlas;
 
-	private TiledTextureRegion mBoxFaceTextureRegion;
-//	private TiledTextureRegion mCircleFaceTextureRegion;
+	private TiledTextureRegion mTankTexture;
+	// private TiledTextureRegion mCircleFaceTextureRegion;
 
-//	private int mFaceCount = 0;
+	// private int mFaceCount = 0;
 
-	 private PhysicsWorld mPhysicsWorld;
+	private PhysicsWorld mPhysicsWorld;
 
 	private float mGravityX;
 	private float mGravityY;
@@ -82,10 +83,10 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-//		Toast.makeText(
-//				this,
-//				"Touch the screen to add objects. Touch an object to shoot it up into the air.",
-//				Toast.LENGTH_LONG).show();
+		// Toast.makeText(
+		// this,
+		// "Touch the screen to add objects. Touch an object to shoot it up into the air.",
+		// Toast.LENGTH_LONG).show();
 
 		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
 
@@ -99,9 +100,10 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 		this.mBitmapTextureAtlas = new BitmapTextureAtlas(
 				this.getTextureManager(), 96, 96, TextureOptions.BILINEAR);
-		this.mBoxFaceTextureRegion = BitmapTextureAtlasTextureRegionFactory
+		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"tank.png", 0, 0, 2, 1); // 64x32
+						"tankTransparent.png", 0, 0, 1, 1); // 64x32 solo hay
+															// uno por ahora!!!
 		this.mBitmapTextureAtlas.load();
 	}
 
@@ -109,8 +111,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	public Scene onCreateScene() {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
-		 this.mPhysicsWorld = new PhysicsWorld(new Vector2(0,
-		 SensorManager.GRAVITY_EARTH), false);
+		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0,
+				SensorManager.GRAVITY_EARTH), false);
 
 		this.mScene = new Scene();
 		this.mScene.setBackground(new Background(0, 0, 0));
@@ -129,14 +131,14 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0,
 				0.5f, 0.5f);
-		 PhysicsFactory.createBoxBody(this.mPhysicsWorld, ground,
-		 BodyType.StaticBody, wallFixtureDef);
-		 PhysicsFactory.createBoxBody(this.mPhysicsWorld, roof,
-		 BodyType.StaticBody, wallFixtureDef);
-		 PhysicsFactory.createBoxBody(this.mPhysicsWorld, left,
-		 BodyType.StaticBody, wallFixtureDef);
-		 PhysicsFactory.createBoxBody(this.mPhysicsWorld, right,
-		 BodyType.StaticBody, wallFixtureDef);
+		PhysicsFactory.createBoxBody(this.mPhysicsWorld, ground,
+				BodyType.StaticBody, wallFixtureDef);
+		PhysicsFactory.createBoxBody(this.mPhysicsWorld, roof,
+				BodyType.StaticBody, wallFixtureDef);
+		PhysicsFactory.createBoxBody(this.mPhysicsWorld, left,
+				BodyType.StaticBody, wallFixtureDef);
+		PhysicsFactory.createBoxBody(this.mPhysicsWorld, right,
+				BodyType.StaticBody, wallFixtureDef);
 
 		this.mScene.attachChild(ground);
 		this.mScene.attachChild(roof);
@@ -146,6 +148,32 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		// this.mScene.registerUpdateHandler(this.mPhysicsWorld);
 
 		this.mScene.setOnAreaTouchListener(this);
+		addFace(138, 150);
+
+//		mScene.registerUpdateHandler(new IUpdateHandler() {
+//			@Override
+//			public void reset() {
+//			}
+//
+//			@Override
+//			public void onUpdate(final float pSecondsElapsed) {
+////				if (mTankTexture.collidesWith(face)) {
+////					centerRectangle.setColor(1, 0, 0);
+////				} else {
+////					centerRectangle.setColor(0, 1, 0);
+////				}
+////
+////				if (line.collidesWith(face)) {
+////					line.setColor(1, 0, 0);
+////				} else {
+////					line.setColor(0, 1, 0);
+////				}
+////
+////				if (!mCamera.isRectangularShapeVisible(face)) {
+////					centerRectangle.setColor(1, 0, 1);
+////				}
+//			}
+//		});
 
 		return this.mScene;
 	}
@@ -168,7 +196,7 @@ public class GameActivity extends SimpleBaseGameActivity implements
 			final TouchEvent pSceneTouchEvent) {
 		if (this.mPhysicsWorld != null) {
 			if (pSceneTouchEvent.isActionDown()) {
-				this.addFace(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
+				//this.addFace(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
 				return true;
 			}
 		}
@@ -185,8 +213,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	public void onAccelerationChanged(final AccelerationData pAccelerationData) {
 		this.mGravityX = pAccelerationData.getX();
 		this.mGravityY = pAccelerationData.getY();
-
-		final Vector2 gravity = Vector2Pool.obtain(this.mGravityX,
+		
+		final Vector2 gravity = Vector2Pool.obtain(this.mGravityX ,
 				this.mGravityY);
 		this.mPhysicsWorld.setGravity(gravity);
 		Vector2Pool.recycle(gravity);
@@ -211,8 +239,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	// ===========================================================
 
 	private void addFace(final float pX, final float pY) {
-		Log.d("pos","X " + pX + " Y " + pY);
-//		this.mFaceCount++;
+		Log.d("pos", "X " + pX + " Y " + pY);
+		// this.mFaceCount++;
 
 		final AnimatedSprite face;
 		final Body body;
@@ -220,25 +248,53 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(1,
 				0.5f, 0.5f);
 
-//		if (this.mFaceCount % 2 == 1) {
-			face = new AnimatedSprite(pX, pY, this.mBoxFaceTextureRegion,
-					this.getVertexBufferObjectManager());
-			body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, face,
-					BodyType.DynamicBody, objectFixtureDef);
-//		} else {
-//			face = new AnimatedSprite(pX, pY, this.mCircleFaceTextureRegion,
-//					this.getVertexBufferObjectManager());
-//			body = PhysicsFactory.createCircleBody(this.mPhysicsWorld, face,
-//					BodyType.DynamicBody, objectFixtureDef);
-//		}
+		// if (this.mFaceCount % 2 == 1) {
+		face = new AnimatedSprite(pX, pY, this.mTankTexture,
+				this.getVertexBufferObjectManager());
+		body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, face,
+				BodyType.DynamicBody, objectFixtureDef);
+		// } else {
+		// face = new AnimatedSprite(pX, pY, this.mCircleFaceTextureRegion,
+		// this.getVertexBufferObjectManager());
+		// body = PhysicsFactory.createCircleBody(this.mPhysicsWorld, face,
+		// BodyType.DynamicBody, objectFixtureDef);
+		// }
 
 		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(face,
 				body, true, true));
 
-		//face.animate(new long[] { 200, 200 }, 0, 1, true);
+		// face.animate(new long[] { 200, 200 }, 0, 1, true);
 		face.setUserData(body);
 		this.mScene.registerTouchArea(face);
 		this.mScene.attachChild(face);
+	}
+
+	private void addBullet(float pX, float pY) {
+		final AnimatedSprite bullet;
+		final Body body;
+
+		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(1,
+				0.5f, 0.5f);
+
+		// if (this.mFaceCount % 2 == 1) {
+		bullet = new AnimatedSprite(pX, pY, this.mTankTexture,
+				this.getVertexBufferObjectManager());
+		body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, bullet,
+				BodyType.DynamicBody, objectFixtureDef);
+		// } else {
+		// face = new AnimatedSprite(pX, pY, this.mCircleFaceTextureRegion,
+		// this.getVertexBufferObjectManager());
+		// body = PhysicsFactory.createCircleBody(this.mPhysicsWorld, face,
+		// BodyType.DynamicBody, objectFixtureDef);
+		// }
+
+		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(bullet,
+				body, true, true));
+
+		// face.animate(new long[] { 200, 200 }, 0, 1, true);
+		bullet.setUserData(body);
+		this.mScene.registerTouchArea(bullet);
+		this.mScene.attachChild(bullet);
 	}
 
 	private void jumpFace(final AnimatedSprite face) {
