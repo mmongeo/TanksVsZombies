@@ -25,7 +25,7 @@
     <string name="main_activity_store">Tienda</string>
 
     <!-- HighScoresFragment -->
-	<string name="high_scores_fragment_empty">No hay puntajes registrados</string>
+    <string name="high_scores_fragment_empty">No hay puntajes registrados</string>
 
     <!-- GameOverActivity -->
     <string name="game_over_tittle">GAME OVER!!!</string>
@@ -36,5 +36,7 @@
     <string name="animation_text_advance">Toque la pantalla para continuar</string>
     <string name="game_over_puntuacionStr">Puntuacion</string>
     <string name="game_over_puntuacion">123456789</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_connect_service">ConnectServiceActivity</string>
 
 </resources>

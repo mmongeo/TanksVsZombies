@@ -51,6 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="5dp"
+        android:onClick="facebookShare"
         android:layout_below="@+id/game_over_puntuacion"
         android:layout_marginLeft="5dp"
         android:layout_marginTop="30dp"

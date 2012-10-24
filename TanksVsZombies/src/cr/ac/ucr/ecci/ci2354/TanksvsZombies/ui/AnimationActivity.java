@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.actionbarsherlock.app.SherlockActivity;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.Services.ConnectServiceActivity;
 
 public class AnimationActivity extends SherlockActivity {
 	TextView mMensaje;
