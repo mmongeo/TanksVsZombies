@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,7 +15,6 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
-import com.j256.ormlite.dao.Dao;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.data.DBHelper;
@@ -24,28 +24,54 @@ public class HighScoresFragment extends SherlockListFragment {
 
 	private static final String TAG = "High Scores Fragment";
 
+	private ScoreAdapter mAdapter;
+	private LoadDataAsyncTask mLoadData;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		try {
+		mAdapter = new ScoreAdapter(getActivity().getApplicationContext());
+		setListAdapter(mAdapter);
+		mLoadData = new LoadDataAsyncTask(mAdapter);
+		mLoadData.execute((Void) null);
 
-			// IMPORTANTE!!!!
-			// REVISAR CUAL ES EL EQUIVALENTE DE ONRETAINCSUTOMCONFIGURATIONINSTANCE PARA FRAGMENTOS
-			
-			Dao<Score, Integer> scoreDao = DBHelper.getHelper().getDao(Score.class);
-			ScoreAdapter adapter = new ScoreAdapter(getActivity().getApplicationContext());
-			adapter.setList(scoreDao.queryForAll());
-			setListAdapter(adapter);
-
-		} catch (SQLException e) {
-			Log.e(TAG, "Couldn't create adapter", e);
-		}
+		setRetainInstance(true);
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_high_scores, null);
+	}
+
+	private static class LoadDataAsyncTask extends AsyncTask<Void, Void, List<Score>> {
+
+		private ScoreAdapter adapter;
+
+		public LoadDataAsyncTask(ScoreAdapter adapter) {
+			this.adapter = adapter;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			Log.i(HighScoresFragment.TAG, "Starting a LoadDataAsyncTask");
+		}
+
+		@Override
+		protected List<Score> doInBackground(Void... params) {
+			List<Score> scores = null;
+			try {
+				scores = DBHelper.getHelper().getDao(Score.class).queryForAll();
+			} catch (SQLException e) {
+				Log.e(HighScoresFragment.TAG, "Error recovering data");
+			}
+			return scores;
+		}
+
+		@Override
+		protected void onPostExecute(List<Score> result) {
+			adapter.setList(result);
+		}
 	}
 
 	private static class ScoreAdapter extends BaseAdapter {
