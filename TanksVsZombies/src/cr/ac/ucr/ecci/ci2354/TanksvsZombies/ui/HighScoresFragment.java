@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -24,28 +25,60 @@ public class HighScoresFragment extends SherlockListFragment {
 
 	private static final String TAG = "High Scores Fragment";
 
+	private ScoreAdapter mAdapter;
+	private LoadDataAsyncTask mLoadData;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		try {
+		// IMPORTANTE!!!!
+		// REVISAR CUAL ES EL EQUIVALENTE DE ONRETAINCSUTOMCONFIGURATIONINSTANCE
+		// PARA FRAGMENTOS
 
-			// IMPORTANTE!!!!
-			// REVISAR CUAL ES EL EQUIVALENTE DE ONRETAINCSUTOMCONFIGURATIONINSTANCE PARA FRAGMENTOS
-			
-			Dao<Score, Integer> scoreDao = DBHelper.getHelper().getDao(Score.class);
-			ScoreAdapter adapter = new ScoreAdapter(getActivity().getApplicationContext());
-			adapter.setList(scoreDao.queryForAll());
-			setListAdapter(adapter);
+		mAdapter = new ScoreAdapter(getActivity().getApplicationContext());
+		setListAdapter(mAdapter);
+		mLoadData = new LoadDataAsyncTask(mAdapter);
+		mLoadData.execute((Void) null);
 
-		} catch (SQLException e) {
-			Log.e(TAG, "Couldn't create adapter", e);
-		}
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_high_scores, null);
+	}
+
+	private static class LoadDataAsyncTask extends
+			AsyncTask<Void, Void, List<Score>> {
+
+		private ScoreAdapter adapter;
+
+		public LoadDataAsyncTask(ScoreAdapter adapter) {
+			this.adapter = adapter;
+		}
+
+		@Override
+		protected void onPreExecute() {
+			// TODO Auto-generated method stub
+			super.onPreExecute();
+		}
+
+		@Override
+		protected List<Score> doInBackground(Void... params) {
+			List<Score> scores = null;
+			try {
+				scores = DBHelper.getHelper().getDao(Score.class).queryForAll();
+			} catch (SQLException e) {
+				Log.e(HighScoresFragment.TAG, "Error recovering data");
+			}
+			return scores;
+		}
+
+		@Override
+		protected void onPostExecute(List<Score> result) {
+			adapter.setList(result);
+		}
 	}
 
 	private static class ScoreAdapter extends BaseAdapter {
@@ -54,7 +87,8 @@ public class HighScoresFragment extends SherlockListFragment {
 		LayoutInflater inflater;
 
 		public ScoreAdapter(Context context) {
-			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			inflater = (LayoutInflater) context
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
 		@Override
@@ -80,12 +114,16 @@ public class HighScoresFragment extends SherlockListFragment {
 
 			if (convertView == null) {
 
-				convertView = inflater.inflate(R.layout.fragment_high_scores_row_layout, parent, false);
+				convertView = inflater
+						.inflate(R.layout.fragment_high_scores_row_layout,
+								parent, false);
 				holder = new ScoreHolder();
 				convertView.setTag(holder);
 
-				holder.user = (TextView) convertView.findViewById(R.id.fragment_high_scores_row_layout_user);
-				holder.score = (TextView) convertView.findViewById(R.id.fragment_high_scores_row_layout_score);
+				holder.user = (TextView) convertView
+						.findViewById(R.id.fragment_high_scores_row_layout_user);
+				holder.score = (TextView) convertView
+						.findViewById(R.id.fragment_high_scores_row_layout_score);
 
 			} else {
 				holder = (ScoreHolder) convertView.getTag();
