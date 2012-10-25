@@ -11,17 +11,20 @@ import cr.ac.ucr.ecci.ci2354.TanksvsZombies.services.ConnectServiceActivity;
 
 public class GameOverActivity extends SherlockActivity {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game_over);
-    }
-    
-    public void facebookShare(View view){
-    	Intent intent = new Intent(getApplicationContext(),ConnectServiceActivity.class);
-    	intent.putExtra("puntuacion", (int)(Math.random()*10000));//SE MANDA LA PUNTUACION
-    	startActivity(intent);
-    	finish();
-    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_game_over);
+	}
+
+	public void facebookShare(View view) {
+		Intent intent = new Intent(getApplicationContext(),
+				ConnectServiceActivity.class);
+		intent.putExtra("puntuacion", (int) (Math.random() * 10000));// SE MANDA
+																		// LA
+																		// PUNTUACION
+		startActivity(intent);
+		finish();
+	}
 
 }

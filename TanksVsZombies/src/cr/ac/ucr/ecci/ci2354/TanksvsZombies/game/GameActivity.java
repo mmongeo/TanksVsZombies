@@ -1,7 +1,8 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.game;
 
 import org.andengine.engine.camera.Camera;
-import org.andengine.engine.handler.IUpdateHandler;
+import org.andengine.engine.handler.timer.ITimerCallback;
+import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
 import org.andengine.engine.options.ScreenOrientation;
 import org.andengine.engine.options.resolutionpolicy.RatioResolutionPolicy;
@@ -26,70 +27,55 @@ import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegion
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.color.Color;
 
 import android.hardware.SensorManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.Manifold;
 
-/**
- * (c) 2010 Nicolas Gramlich (c) 2011 Zynga
- * 
- * @author Nicolas Gramlich
- * @since 21:18:08 - 27.06.2010
- */
 public class GameActivity extends SimpleBaseGameActivity implements
 		IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
-	// ===========================================================
-	// Constants
-	// ===========================================================
+
+	private static final String TAG = "GameActivity";
 
 	private static final int CAMERA_WIDTH = 360;
 	private static final int CAMERA_HEIGHT = 240;
-
-	// ===========================================================
-	// Fields
-	// ===========================================================
+	private static final int TANK_WIDTH = 50;
+	private static final int TANK_HEIGHT = 50;
+	private static final int BULLET_VELOCITY = -30;
+	private static final int ZOMBIE_VELOCITY = 1;
+	private static final int ANY_TYPE = 0;
+	private static final int TANK_TYPE = 1;
+	private static final int BULLET_TYPE = 2;
+	private static final int NORMAL_ZOMBIE_TYPE = 3;
+	private static final float DELAY_BULLET = 0.5f;
+	private static final float DELAY_ZOMBIE = 2f;
 
 	private BitmapTextureAtlas mBitmapTextureAtlas;
-
 	private TiledTextureRegion mTankTexture;
-	// private TiledTextureRegion mCircleFaceTextureRegion;
+	private TiledTextureRegion mBulletTexture;
+	private TiledTextureRegion mZombieTexture;
 
-	// private int mFaceCount = 0;
-
-	private PhysicsWorld mPhysicsWorld;
-
-	private float mGravityX;
-	private float mGravityY;
+	private AnimatedSprite mTank;
 
 	private Scene mScene;
+	private PhysicsWorld mPhysicsWorld;
+	private float mGravityX;
+	// private float mGravityY;
 
-	// ===========================================================
-	// Constructors
-	// ===========================================================
-
-	// ===========================================================
-	// Getter & Setter
-	// ===========================================================
-
-	// ===========================================================
-	// Methods for/from SuperClass/Interfaces
-	// ===========================================================
+	private boolean allowBulletCreation = true;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-		// Toast.makeText(
-		// this,
-		// "Touch the screen to add objects. Touch an object to shoot it up into the air.",
-		// Toast.LENGTH_LONG).show();
-
 		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-
 		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
 				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
 	}
@@ -97,13 +83,17 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	@Override
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-
 		this.mBitmapTextureAtlas = new BitmapTextureAtlas(
-				this.getTextureManager(), 96, 96, TextureOptions.BILINEAR);
+				this.getTextureManager(), 100, 100, TextureOptions.BILINEAR);
 		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"tankTransparent.png", 0, 0, 1, 1); // 64x32 solo hay
-															// uno por ahora!!!
+						"tankTransparent.png", 0, 0, 1, 1);
+		this.mBulletTexture = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
+						"bullet.png", 51, 0, 1, 1);
+		this.mZombieTexture = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
+						"zombieP.png", 72, 0, 1, 1);
 		this.mBitmapTextureAtlas.load();
 	}
 
@@ -112,68 +102,107 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
 		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0,
-				SensorManager.GRAVITY_EARTH), false);
+				SensorManager.GRAVITY_DEATH_STAR_I), false); // death star
+																// gravity!!!!
 
 		this.mScene = new Scene();
-		this.mScene.setBackground(new Background(0, 0, 0));
+		this.mScene.setBackground(new Background(Color.WHITE));
 		this.mScene.setOnSceneTouchListener(this);
 
-		final VertexBufferObjectManager vertexBufferObjectManager = this
-				.getVertexBufferObjectManager();
-		final Rectangle ground = new Rectangle(0, CAMERA_HEIGHT - 2,
-				CAMERA_WIDTH, 2, vertexBufferObjectManager);
-		final Rectangle roof = new Rectangle(0, 0, CAMERA_WIDTH, 2,
-				vertexBufferObjectManager);
-		final Rectangle left = new Rectangle(0, 0, 2, CAMERA_HEIGHT,
-				vertexBufferObjectManager);
-		final Rectangle right = new Rectangle(CAMERA_WIDTH - 2, 0, 2,
-				CAMERA_HEIGHT, vertexBufferObjectManager);
-
-		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0,
-				0.5f, 0.5f);
-		PhysicsFactory.createBoxBody(this.mPhysicsWorld, ground,
-				BodyType.StaticBody, wallFixtureDef);
-		PhysicsFactory.createBoxBody(this.mPhysicsWorld, roof,
-				BodyType.StaticBody, wallFixtureDef);
-		PhysicsFactory.createBoxBody(this.mPhysicsWorld, left,
-				BodyType.StaticBody, wallFixtureDef);
-		PhysicsFactory.createBoxBody(this.mPhysicsWorld, right,
-				BodyType.StaticBody, wallFixtureDef);
-
-		this.mScene.attachChild(ground);
-		this.mScene.attachChild(roof);
-		this.mScene.attachChild(left);
-		this.mScene.attachChild(right);
-
-		// this.mScene.registerUpdateHandler(this.mPhysicsWorld);
+		this.mScene.registerUpdateHandler(this.mPhysicsWorld);
 
 		this.mScene.setOnAreaTouchListener(this);
-		addFace(138, 150);
 
-//		mScene.registerUpdateHandler(new IUpdateHandler() {
-//			@Override
-//			public void reset() {
-//			}
-//
-//			@Override
-//			public void onUpdate(final float pSecondsElapsed) {
-////				if (mTankTexture.collidesWith(face)) {
-////					centerRectangle.setColor(1, 0, 0);
-////				} else {
-////					centerRectangle.setColor(0, 1, 0);
-////				}
-////
-////				if (line.collidesWith(face)) {
-////					line.setColor(1, 0, 0);
-////				} else {
-////					line.setColor(0, 1, 0);
-////				}
-////
-////				if (!mCamera.isRectangularShapeVisible(face)) {
-////					centerRectangle.setColor(1, 0, 1);
-////				}
-//			}
-//		});
+		mPhysicsWorld.setContactListener(new ContactListener() {
+
+			@Override
+			public void preSolve(Contact contact, Manifold oldManifold) {
+			}
+
+			@Override
+			public void postSolve(Contact contact, ContactImpulse impulse) {
+			}
+
+			@Override
+			public void endContact(Contact contact) {
+			}
+
+			@Override
+			public void beginContact(Contact contact) {
+
+				Body bodyVector[] = {contact.getFixtureA().getBody(), contact.getFixtureB().getBody()};
+				SpriteHolder spriteVector[] = {null, null};
+				for (int i = 0; i < 2; ++i) {
+					if ((SpriteHolder) bodyVector[i].getUserData() != null) {
+						spriteVector[i] = (SpriteHolder) bodyVector[i].getUserData();
+					}
+				}
+				
+				verifyCases(spriteVector[0], spriteVector[1]);
+			}
+
+			// permite nulos en los SpriteHolder
+			private void verifyCases(SpriteHolder a, SpriteHolder b) {
+
+				Log.d(TAG, "LOL " + (a == null) + " " + (b == null));
+				
+				int typeA[] = { BULLET_TYPE, ANY_TYPE, BULLET_TYPE, NORMAL_ZOMBIE_TYPE };
+				int typeB[] = { ANY_TYPE, BULLET_TYPE,NORMAL_ZOMBIE_TYPE, BULLET_TYPE };
+				boolean killA[] = {true, false, true, true};
+				boolean killB[] = {false, true, true, true};
+
+				for (int i = 0; i < 4; ++i) {
+					if (verifyTypes(a, b, typeA[i], typeB[i])){
+						killSprites(a, b, killA[i], killB[i]);
+					}
+				}
+				
+			}
+
+			// permite nulos en los SpriteHolder
+			private boolean verifyTypes(SpriteHolder a, SpriteHolder b,
+					int typeA, int typeB) {
+				return (a != null && a.type == typeA || typeA == ANY_TYPE)
+						&& (b != null && b.type == typeB || typeB == ANY_TYPE);
+			}
+
+			private void killSprites(final SpriteHolder a,
+					final SpriteHolder b, final boolean killA,
+					final boolean killB) {
+
+				getEngine().runOnUpdateThread(new Runnable() {
+					public void run() {
+						if (killA) {
+							kill(a);
+						}
+						if (killB) {
+							kill(b);
+						}
+					}
+
+					private void kill(SpriteHolder victim) {
+						victim.body.setActive(false);
+						victim.sprite.setVisible(false);
+					}
+				});
+			}
+
+		});
+
+		// Creador de Zombies
+		getEngine().registerUpdateHandler(
+				new TimerHandler(DELAY_ZOMBIE, true, new ITimerCallback() {
+
+					@Override
+					public void onTimePassed(TimerHandler pTimerHandler) {
+						addZombie((float) (Math.random() * CAMERA_HEIGHT), 0f);
+
+					}
+				}));
+
+		createRectangle();
+
+		addTank(CAMERA_WIDTH / 2 - TANK_WIDTH / 2, CAMERA_HEIGHT - TANK_HEIGHT);
 
 		return this.mScene;
 	}
@@ -182,40 +211,37 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 			final ITouchArea pTouchArea, final float pTouchAreaLocalX,
 			final float pTouchAreaLocalY) {
-		if (pSceneTouchEvent.isActionDown()) {
-			final AnimatedSprite face = (AnimatedSprite) pTouchArea;
-			this.jumpFace(face);
-			return true;
-		}
-
 		return false;
 	}
 
 	@Override
 	public boolean onSceneTouchEvent(final Scene pScene,
 			final TouchEvent pSceneTouchEvent) {
+		boolean result = false;
 		if (this.mPhysicsWorld != null) {
-			if (pSceneTouchEvent.isActionDown()) {
-				//this.addFace(pSceneTouchEvent.getX(), pSceneTouchEvent.getY());
-				return true;
+			if (pSceneTouchEvent.isActionDown() && allowBulletCreation) {
+				allowBulletCreation = false;
+				result = true;
+
+				getEngine().runOnUpdateThread(new Runnable() {
+
+					@Override
+					public void run() {
+						addBullet();
+					}
+				});
+
 			}
 		}
-		return false;
-	}
 
-	@Override
-	public void onAccelerationAccuracyChanged(
-			final AccelerationData pAccelerationData) {
-
+		return result;
 	}
 
 	@Override
 	public void onAccelerationChanged(final AccelerationData pAccelerationData) {
 		this.mGravityX = pAccelerationData.getX();
-		this.mGravityY = pAccelerationData.getY();
-		
-		final Vector2 gravity = Vector2Pool.obtain(this.mGravityX ,
-				this.mGravityY);
+		// this.mGravityY = pAccelerationData.getY();
+		final Vector2 gravity = Vector2Pool.obtain(this.mGravityX, 0);
 		this.mPhysicsWorld.setGravity(gravity);
 		Vector2Pool.recycle(gravity);
 	}
@@ -223,90 +249,112 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	@Override
 	public void onResumeGame() {
 		super.onResumeGame();
-
 		this.enableAccelerationSensor(this);
 	}
 
 	@Override
 	public void onPauseGame() {
 		super.onPauseGame();
-
 		this.disableAccelerationSensor();
 	}
 
-	// ===========================================================
-	// Methods
-	// ===========================================================
+	private void createRectangle() {
+		int rectanglePX[] = { 0, 0, 0, CAMERA_WIDTH - 2 };
+		int rectanglePY[] = { CAMERA_HEIGHT - 2, 0, 0, 0 };
+		int retangleWidth[] = { CAMERA_WIDTH, CAMERA_WIDTH, 2, 2 };
+		int rectangleHeigth[] = { 2, 2, CAMERA_HEIGHT, CAMERA_HEIGHT };
+		final VertexBufferObjectManager vertexBufferObjectManager = this
+				.getVertexBufferObjectManager();
+		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0,
+				0f, 0.5f);
+		for (int i = 0; i < 4; ++i) {
+			final Rectangle r = new Rectangle(rectanglePX[i], rectanglePY[i],
+					retangleWidth[i], rectangleHeigth[i],
+					vertexBufferObjectManager);
+			PhysicsFactory.createBoxBody(this.mPhysicsWorld, r,
+					BodyType.StaticBody, wallFixtureDef);
+			this.mScene.attachChild(r);
+		}
+	}
 
-	private void addFace(final float pX, final float pY) {
-		Log.d("pos", "X " + pX + " Y " + pY);
-		// this.mFaceCount++;
+	private void addTank(final float pX, final float pY) {
+		// Log.d(GameActivity.TAG, "Tank position: X " + pX + " Y " + pY);
+		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture, TANK_TYPE);
+		((Body) mTank.getUserData()).setFixedRotation(true);
+	}
 
-		final AnimatedSprite face;
-		final Body body;
+	private void addZombie(final float pX, final float pY) {
+		// Log.d(GameActivity.TAG, "Zombie position: X " + pX + " Y " + pY);
+		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY,
+				mZombieTexture, NORMAL_ZOMBIE_TYPE);
 
-		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(1,
-				0.5f, 0.5f);
+		moveSprite(ZOMBIE_VELOCITY, (Body) zombie.getUserData());
+	}
 
-		// if (this.mFaceCount % 2 == 1) {
-		face = new AnimatedSprite(pX, pY, this.mTankTexture,
+	private void addBullet() {
+
+		float pX = mTank.getX() + TANK_WIDTH / 4;
+		float pY = mTank.getY() - TANK_HEIGHT / 2;
+		// Log.d(GameActivity.TAG, "Bullet position: X " + pX + " Y " + pY);
+
+		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY,
+				mBulletTexture, BULLET_TYPE);
+
+		moveSprite(BULLET_VELOCITY, (Body) bullet.getUserData());
+
+		getEngine().registerUpdateHandler(
+				new TimerHandler(DELAY_BULLET, new ITimerCallback() {
+					@Override
+					public void onTimePassed(TimerHandler pTimerHandler) {
+						getEngine().getTouchController().reset(); // Peligroso
+						allowBulletCreation = true;
+					}
+				}));
+	}
+
+	private void moveSprite(int velocity, Body b) {
+		Vector2 vector = Vector2Pool.obtain(0, velocity);
+		b.setLinearVelocity(vector);
+		Vector2Pool.recycle(vector);
+	}
+
+	private AnimatedSprite createAnimatedSprite(float density, float pX,
+			float pY, TiledTextureRegion t, int type) {
+
+		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(
+				density, 0.1f, 0.5f);
+
+		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t,
 				this.getVertexBufferObjectManager());
-		body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, face,
-				BodyType.DynamicBody, objectFixtureDef);
-		// } else {
-		// face = new AnimatedSprite(pX, pY, this.mCircleFaceTextureRegion,
-		// this.getVertexBufferObjectManager());
-		// body = PhysicsFactory.createCircleBody(this.mPhysicsWorld, face,
-		// BodyType.DynamicBody, objectFixtureDef);
-		// }
 
-		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(face,
-				body, true, true));
+		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld,
+				sprite, BodyType.DynamicBody, objectFixtureDef);
 
-		// face.animate(new long[] { 200, 200 }, 0, 1, true);
-		face.setUserData(body);
-		this.mScene.registerTouchArea(face);
-		this.mScene.attachChild(face);
+		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(
+				sprite, body, true, true));
+
+		SpriteHolder holder = new SpriteHolder();
+		holder.sprite = sprite;
+		holder.type = type;
+		holder.body = body;
+
+		body.setUserData(holder); // El userData del body es el sprite y el tipo
+		sprite.setUserData(body); // El userData del sprite es el body
+
+		this.mScene.registerTouchArea(sprite);
+		this.mScene.attachChild(sprite);
+
+		return sprite;
 	}
 
-	private void addBullet(float pX, float pY) {
-		final AnimatedSprite bullet;
-		final Body body;
-
-		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(1,
-				0.5f, 0.5f);
-
-		// if (this.mFaceCount % 2 == 1) {
-		bullet = new AnimatedSprite(pX, pY, this.mTankTexture,
-				this.getVertexBufferObjectManager());
-		body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, bullet,
-				BodyType.DynamicBody, objectFixtureDef);
-		// } else {
-		// face = new AnimatedSprite(pX, pY, this.mCircleFaceTextureRegion,
-		// this.getVertexBufferObjectManager());
-		// body = PhysicsFactory.createCircleBody(this.mPhysicsWorld, face,
-		// BodyType.DynamicBody, objectFixtureDef);
-		// }
-
-		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(bullet,
-				body, true, true));
-
-		// face.animate(new long[] { 200, 200 }, 0, 1, true);
-		bullet.setUserData(body);
-		this.mScene.registerTouchArea(bullet);
-		this.mScene.attachChild(bullet);
+	@Override
+	public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {
 	}
 
-	private void jumpFace(final AnimatedSprite face) {
-		final Body faceBody = (Body) face.getUserData();
-
-		final Vector2 velocity = Vector2Pool.obtain(this.mGravityX * -50,
-				this.mGravityY * -50);
-		faceBody.setLinearVelocity(velocity);
-		Vector2Pool.recycle(velocity);
+	private static class SpriteHolder {
+		public AnimatedSprite sprite;
+		public Body body;
+		public int type; // 1 == bullet
 	}
 
-	// ===========================================================
-	// Inner and Anonymous Classes
-	// ===========================================================
 }
