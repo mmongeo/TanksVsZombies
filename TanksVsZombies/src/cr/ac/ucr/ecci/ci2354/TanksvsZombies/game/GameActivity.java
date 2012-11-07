@@ -11,8 +11,11 @@ import org.andengine.entity.scene.IOnAreaTouchListener;
 import org.andengine.entity.scene.IOnSceneTouchListener;
 import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
+import org.andengine.entity.scene.background.AutoParallaxBackground;
 import org.andengine.entity.scene.background.Background;
+import org.andengine.entity.scene.background.ParallaxBackground.ParallaxEntity;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.sprite.Sprite;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
@@ -24,6 +27,7 @@ import org.andengine.input.touch.TouchEvent;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
+import org.andengine.opengl.texture.region.ITextureRegion;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
@@ -40,6 +44,8 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.Manifold;
+
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.game.VerticalParallaxBackground.VerticalParallaxEntity;
 
 public class GameActivity extends SimpleBaseGameActivity implements
 		IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
@@ -63,6 +69,9 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	private TiledTextureRegion mTankTexture;
 	private TiledTextureRegion mBulletTexture;
 	private TiledTextureRegion mZombieTexture;
+	private ITextureRegion mBackLayer; //la parte de atras
+	private ITextureRegion mFrontLayer; // los arbolitos
+	private BitmapTextureAtlas mParallaxTexture;
 
 	private AnimatedSprite mTank;
 
@@ -95,6 +104,12 @@ public class GameActivity extends SimpleBaseGameActivity implements
 				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
 						"zombieP.png", 72, 0, 1, 1);
 		this.mBitmapTextureAtlas.load();
+		
+		this.mParallaxTexture = new BitmapTextureAtlas(this.getTextureManager(), 1024, 1024);
+		this.mBackLayer = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mParallaxTexture, this, "background.png", 0, 0);
+		//this.mParallaxLayerBack = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAutoParallaxBackgroundTexture, this, "parallax_background_layer_back.png", 0, 188);
+		//this.mParallaxLayerMid = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAutoParallaxBackgroundTexture, this, "parallax_background_layer_mid.png", 0, 669);
+		this.mParallaxTexture.load();
 	}
 
 	@Override
@@ -104,9 +119,12 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0,
 				SensorManager.GRAVITY_DEATH_STAR_I), false); // death star
 																// gravity!!!!
-
+		VertexBufferObjectManager vertexBufferObjectManager = this.getVertexBufferObjectManager();
+		//AutoParallaxBackground (float pRed, float pGreen, float pBlue, float pParallaxChangePerSecond)
+		AutoVerticalParallaxBackground autoParallaxBackground = new AutoVerticalParallaxBackground(0, 0, 0, 5);
+		autoParallaxBackground.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f, new Sprite(0, CAMERA_HEIGHT - this.mBackLayer.getHeight(),this.mBackLayer,vertexBufferObjectManager)));
 		this.mScene = new Scene();
-		this.mScene.setBackground(new Background(Color.WHITE));
+		this.mScene.setBackground(autoParallaxBackground);
 		this.mScene.setOnSceneTouchListener(this);
 
 		this.mScene.registerUpdateHandler(this.mPhysicsWorld);

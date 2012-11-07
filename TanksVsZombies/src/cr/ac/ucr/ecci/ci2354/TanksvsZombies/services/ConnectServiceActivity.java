@@ -1,4 +1,4 @@
-package cr.ac.ucr.ecci.ci2354.TanksvsZombies.services;
+package cr.ac.ucr.ecci.ci2354.TanksvsZombies.Services;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
