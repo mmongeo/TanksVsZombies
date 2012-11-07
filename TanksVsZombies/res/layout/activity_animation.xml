@@ -10,6 +10,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"
+        android:contentDescription="@string/game_title"
         android:src="@drawable/logo" />
 
     <TextView
@@ -30,6 +31,7 @@
         android:layout_alignLeft="@+id/animation_logo"
         android:layout_marginBottom="85dp"
         android:layout_marginLeft="37dp"
+        android:contentDescription="@string/game_title"
         android:src="@drawable/frame0" />
 
     <ImageView
@@ -39,6 +41,7 @@
         android:layout_above="@+id/animation_text_continuar"
         android:layout_alignRight="@+id/animation_logo"
         android:layout_marginBottom="67dp"
+        android:contentDescription="@string/game_title"
         android:src="@drawable/zombie0" />
 
 </RelativeLayout>

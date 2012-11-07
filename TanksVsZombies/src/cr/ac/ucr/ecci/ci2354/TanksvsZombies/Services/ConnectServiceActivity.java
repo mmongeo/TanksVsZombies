@@ -22,7 +22,6 @@ import com.facebook.android.Facebook.DialogListener;
 import com.facebook.android.FacebookError;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.AnimationActivity;
 
 public class ConnectServiceActivity extends Activity {
 	public static final String idApp = "413285808737731";
@@ -33,6 +32,7 @@ public class ConnectServiceActivity extends Activity {
 	Facebook facebook;
 	AsyncFacebookRunner mAsyncRunner;
 	private int puntuacion;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,87 +47,80 @@ public class ConnectServiceActivity extends Activity {
 		} else {
 			post(puntuacion);
 		}
-		startActivity(new Intent(getApplicationContext(), AnimationActivity.class));
-		finish();
-		
 	}
-
+	
 	private void post(int puntuacion) {
 		// TODO Auto-generated method stub
 		Bundle parameters = new Bundle();
-		parameters.putString("message", "He conseguido una puntuación de "+puntuacion+" en el juego TANKS vs ZOMBIES");
+		parameters.putString("message", "He conseguido una puntuación de " + puntuacion + " en el juego TANKS vs ZOMBIES");
 		parameters.putString("description", "Nueva puntuación");
 		parameters.putString("picture", "http://i49.tinypic.com/2a9d3td.png");
 		try {
 			// mAsyncRunner.request("me", null);
-			mAsyncRunner.request("me/feed", parameters, "POST",
-					new RequestListener() {
+			mAsyncRunner.request("me/feed", parameters, "POST", new RequestListener() {
 
-						@Override
-						public void onMalformedURLException(
-								MalformedURLException e, Object state) {
-							// TODO Auto-generated method stub
+				@Override
+				public void onMalformedURLException(MalformedURLException e, Object state) {
+					// TODO Auto-generated method stub
 
-						}
+				}
 
-						@Override
-						public void onIOException(IOException e, Object state) {
-							// TODO Auto-generated method stub
+				@Override
+				public void onIOException(IOException e, Object state) {
+					// TODO Auto-generated method stub
 
-						}
+				}
 
-						@Override
-						public void onFileNotFoundException(
-								FileNotFoundException e, Object state) {
-							// TODO Auto-generated method stub
+				@Override
+				public void onFileNotFoundException(FileNotFoundException e, Object state) {
+					// TODO Auto-generated method stub
 
-						}
+				}
 
-						@Override
-						public void onFacebookError(FacebookError e,
-								Object state) {
-							// TODO Auto-generated method stub
+				@Override
+				public void onFacebookError(FacebookError e, Object state) {
+					// TODO Auto-generated method stub
 
-						}
+				}
 
-						@Override
-						public void onComplete(String response, Object state) {
-							// TODO Auto-generated method stub
+				@Override
+				public void onComplete(String response, Object state) {
+					// TODO Auto-generated method stub
 
-						}
-					}, null);
-//			mAsyncRunner.request("user_id/scores", parameters, "POST", new RequestListener() {
-//				
-//				@Override
-//				public void onMalformedURLException(MalformedURLException e, Object state) {
-//					// TODO Auto-generated method stub
-//					
-//				}
-//				
-//				@Override
-//				public void onIOException(IOException e, Object state) {
-//					// TODO Auto-generated method stub
-//					
-//				}
-//				
-//				@Override
-//				public void onFileNotFoundException(FileNotFoundException e, Object state) {
-//					// TODO Auto-generated method stub
-//					
-//				}
-//				
-//				@Override
-//				public void onFacebookError(FacebookError e, Object state) {
-//					// TODO Auto-generated method stub
-//					
-//				}
-//				
-//				@Override
-//				public void onComplete(String response, Object state) {
-//					// TODO Auto-generated method stub
-//					
-//				}
-//			},null);
+				}
+			}, null);
+			// mAsyncRunner.request("user_id/scores", parameters, "POST", new RequestListener() {
+			//
+			// @Override
+			// public void onMalformedURLException(MalformedURLException e, Object state) {
+			// // TODO Auto-generated method stub
+			//
+			// }
+			//
+			// @Override
+			// public void onIOException(IOException e, Object state) {
+			// // TODO Auto-generated method stub
+			//
+			// }
+			//
+			// @Override
+			// public void onFileNotFoundException(FileNotFoundException e, Object state) {
+			// // TODO Auto-generated method stub
+			//
+			// }
+			//
+			// @Override
+			// public void onFacebookError(FacebookError e, Object state) {
+			// // TODO Auto-generated method stub
+			//
+			// }
+			//
+			// @Override
+			// public void onComplete(String response, Object state) {
+			// // TODO Auto-generated method stub
+			//
+			// }
+			// },null);
 			Log.d("", "SE LOGRÓ RESPUESTA ");
 			showToast("Se realizó con éxito la publicación del puntaje en tu muro");
 		} catch (Exception e) {
@@ -137,21 +130,17 @@ public class ConnectServiceActivity extends Activity {
 	}
 
 	private void loginAndPost() {
-		// TODO Auto-generated method stub
-		facebook.authorize(this, new String[] { "publish_stream","publish_actions","user_games_activity","friends_games_activity"},
-				Facebook.FORCE_DIALOG_AUTH, new LoginDialogListener());
+		facebook.authorize(this, new String[] { "publish_stream", "publish_actions", "user_games_activity", "friends_games_activity" }, Facebook.FORCE_DIALOG_AUTH, new LoginDialogListener());
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO Auto-generated method stub
 		super.onActivityResult(requestCode, resultCode, data);
 		facebook.authorizeCallback(requestCode, resultCode, data);
 	}
 
 	@Override
 	protected void onResume() {
-		// TODO Auto-generated method stub
 		super.onResume();
 		facebook.extendAccessToken(this, null);
 	}
@@ -163,8 +152,7 @@ public class ConnectServiceActivity extends Activity {
 	}
 
 	public boolean saveCredentials(Facebook fac) {
-		Editor editor = getApplicationContext().getSharedPreferences(KEY,
-				Context.MODE_PRIVATE).edit();
+		Editor editor = ConnectServiceActivity.this.getSharedPreferences(KEY, Context.MODE_PRIVATE).edit();
 		editor.putString(TOKEN, fac.getAccessToken());
 		editor.putLong(EXPIRES, fac.getAccessExpires());
 		return editor.commit();
@@ -172,8 +160,7 @@ public class ConnectServiceActivity extends Activity {
 	}
 
 	public boolean restoreCredentials(Facebook fac) {
-		SharedPreferences shared = getApplicationContext()
-				.getSharedPreferences(KEY, Context.MODE_PRIVATE);
+		SharedPreferences shared = ConnectServiceActivity.this.getSharedPreferences(KEY, Context.MODE_PRIVATE);
 		fac.setAccessToken(shared.getString(TOKEN, null));
 		fac.setAccessExpires(shared.getLong(EXPIRES, 0));
 		return fac.isSessionValid();
@@ -209,7 +196,6 @@ public class ConnectServiceActivity extends Activity {
 	}
 
 	private void showToast(String msj) {
-		Toast.makeText(getApplicationContext(), msj, Toast.LENGTH_LONG).show();
+		Toast.makeText(ConnectServiceActivity.this, msj, Toast.LENGTH_LONG).show();
 	}
-
 }

@@ -13,6 +13,9 @@ import org.andengine.entity.scene.ITouchArea;
 import org.andengine.entity.scene.Scene;
 import org.andengine.entity.scene.background.Background;
 import org.andengine.entity.sprite.AnimatedSprite;
+import org.andengine.entity.text.Text;
+import org.andengine.entity.text.TickerText;
+import org.andengine.entity.text.TickerText.TickerTextOptions;
 import org.andengine.entity.util.FPSLogger;
 import org.andengine.extension.physics.box2d.PhysicsConnector;
 import org.andengine.extension.physics.box2d.PhysicsFactory;
@@ -21,44 +24,49 @@ import org.andengine.extension.physics.box2d.util.Vector2Pool;
 import org.andengine.input.sensor.acceleration.AccelerationData;
 import org.andengine.input.sensor.acceleration.IAccelerationListener;
 import org.andengine.input.touch.TouchEvent;
+import org.andengine.opengl.font.Font;
+import org.andengine.opengl.font.FontFactory;
+import org.andengine.opengl.texture.ITexture;
 import org.andengine.opengl.texture.TextureOptions;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlas;
 import org.andengine.opengl.texture.atlas.bitmap.BitmapTextureAtlasTextureRegionFactory;
 import org.andengine.opengl.texture.region.TiledTextureRegion;
 import org.andengine.opengl.vbo.VertexBufferObjectManager;
 import org.andengine.ui.activity.SimpleBaseGameActivity;
+import org.andengine.util.HorizontalAlign;
 import org.andengine.util.color.Color;
 
+import android.content.Intent;
 import android.hardware.SensorManager;
-import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.physics.box2d.MassData;
 
-public class GameActivity extends SimpleBaseGameActivity implements
-		IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameOverActivity;
 
-	private static final String TAG = "GameActivity";
+public class GameActivity extends SimpleBaseGameActivity implements IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
+
+//	private static final String TAG = "GameActivity";
 
 	private static final int CAMERA_WIDTH = 360;
 	private static final int CAMERA_HEIGHT = 240;
+	
 	private static final int TANK_WIDTH = 50;
 	private static final int TANK_HEIGHT = 50;
+	
 	private static final int BULLET_VELOCITY = -30;
 	private static final int ZOMBIE_VELOCITY = 1;
-	private static final int ANY_TYPE = 0;
-	private static final int TANK_TYPE = 1;
-	private static final int BULLET_TYPE = 2;
-	private static final int NORMAL_ZOMBIE_TYPE = 3;
+
 	private static final float DELAY_BULLET = 0.5f;
 	private static final float DELAY_ZOMBIE = 2f;
 
+	private static final String REMAINING_LIFES_STRING = "Vidas Restantes: ";
+	private static final String SCORE_STRING = "Puntaje: ";
+	private static final float FONT_SIZE = 12;
+	
 	private BitmapTextureAtlas mBitmapTextureAtlas;
 	private TiledTextureRegion mTankTexture;
 	private TiledTextureRegion mBulletTexture;
@@ -69,41 +77,46 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	private Scene mScene;
 	private PhysicsWorld mPhysicsWorld;
 	private float mGravityX;
+	private Font mFont;
 	// private float mGravityY;
+
+	private Text text;
+
+	private Game game = new Game(this);
 
 	private boolean allowBulletCreation = true;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		final Camera camera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
-				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
+		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), camera);
 	}
 
 	@Override
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
-		this.mBitmapTextureAtlas = new BitmapTextureAtlas(
-				this.getTextureManager(), 100, 100, TextureOptions.BILINEAR);
-		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"tankTransparent.png", 0, 0, 1, 1);
-		this.mBulletTexture = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"bullet.png", 51, 0, 1, 1);
-		this.mZombieTexture = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"zombieP.png", 72, 0, 1, 1);
+		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 100, 100, TextureOptions.BILINEAR);
+		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "tankTransparent.png", 0, 0, 1, 1);
+		this.mBulletTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "bullet.png", 51, 0, 1, 1);
+		this.mZombieTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "zombieP.png", 72, 0, 1, 1);
 		this.mBitmapTextureAtlas.load();
+		
+		// Para la fuente
+		ITexture fontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+		FontFactory.setAssetBasePath("font/");
+		this.mFont = FontFactory.createFromAsset(this.getFontManager(), fontTexture, this.getAssets(), "Adventure.ttf", FONT_SIZE, true, Color.BLACK.getARGBPackedInt());
+		this.mFont.load();
+		
+	
 	}
 
 	@Override
 	public Scene onCreateScene() {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
-		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0,
-				SensorManager.GRAVITY_DEATH_STAR_I), false); // death star
-																// gravity!!!!
+		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0, SensorManager.GRAVITY_DEATH_STAR_I), false); // death
+																											// star
+																											// gravity!!!!
 
 		this.mScene = new Scene();
 		this.mScene.setBackground(new Background(Color.WHITE));
@@ -113,110 +126,46 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 		this.mScene.setOnAreaTouchListener(this);
 
-		mPhysicsWorld.setContactListener(new ContactListener() {
-
-			@Override
-			public void preSolve(Contact contact, Manifold oldManifold) {
-			}
-
-			@Override
-			public void postSolve(Contact contact, ContactImpulse impulse) {
-			}
-
-			@Override
-			public void endContact(Contact contact) {
-			}
-
-			@Override
-			public void beginContact(Contact contact) {
-
-				Body bodyVector[] = {contact.getFixtureA().getBody(), contact.getFixtureB().getBody()};
-				SpriteHolder spriteVector[] = {null, null};
-				for (int i = 0; i < 2; ++i) {
-					if ((SpriteHolder) bodyVector[i].getUserData() != null) {
-						spriteVector[i] = (SpriteHolder) bodyVector[i].getUserData();
-					}
-				}
-				
-				verifyCases(spriteVector[0], spriteVector[1]);
-			}
-
-			// permite nulos en los SpriteHolder
-			private void verifyCases(SpriteHolder a, SpriteHolder b) {
-
-				Log.d(TAG, "LOL " + (a == null) + " " + (b == null));
-				
-				int typeA[] = { BULLET_TYPE, ANY_TYPE, BULLET_TYPE, NORMAL_ZOMBIE_TYPE };
-				int typeB[] = { ANY_TYPE, BULLET_TYPE,NORMAL_ZOMBIE_TYPE, BULLET_TYPE };
-				boolean killA[] = {true, false, true, true};
-				boolean killB[] = {false, true, true, true};
-
-				for (int i = 0; i < 4; ++i) {
-					if (verifyTypes(a, b, typeA[i], typeB[i])){
-						killSprites(a, b, killA[i], killB[i]);
-					}
-				}
-				
-			}
-
-			// permite nulos en los SpriteHolder
-			private boolean verifyTypes(SpriteHolder a, SpriteHolder b,
-					int typeA, int typeB) {
-				return (a != null && a.type == typeA || typeA == ANY_TYPE)
-						&& (b != null && b.type == typeB || typeB == ANY_TYPE);
-			}
-
-			private void killSprites(final SpriteHolder a,
-					final SpriteHolder b, final boolean killA,
-					final boolean killB) {
-
-				getEngine().runOnUpdateThread(new Runnable() {
-					public void run() {
-						if (killA) {
-							kill(a);
-						}
-						if (killB) {
-							kill(b);
-						}
-					}
-
-					private void kill(SpriteHolder victim) {
-						victim.body.setActive(false);
-						victim.sprite.setVisible(false);
-					}
-				});
-			}
-
-		});
+		mPhysicsWorld.setContactListener(new GameContactListener(this, game));
 
 		// Creador de Zombies
-		getEngine().registerUpdateHandler(
-				new TimerHandler(DELAY_ZOMBIE, true, new ITimerCallback() {
+		getEngine().registerUpdateHandler(new TimerHandler(DELAY_ZOMBIE, true, new ITimerCallback() {
 
-					@Override
-					public void onTimePassed(TimerHandler pTimerHandler) {
-						addZombie((float) (Math.random() * CAMERA_HEIGHT), 0f);
+			@Override
+			public void onTimePassed(TimerHandler pTimerHandler) {
+				addZombie((float) (Math.random() * CAMERA_HEIGHT), 0f);
 
-					}
-				}));
+			}
+		}));
 
 		createRectangle();
 
 		addTank(CAMERA_WIDTH / 2 - TANK_WIDTH / 2, CAMERA_HEIGHT - TANK_HEIGHT);
 
+		text = new TickerText(10, 10, this.mFont, REMAINING_LIFES_STRING + game.getRemainingLife() + "\n" + SCORE_STRING + game.getScore(), new TickerTextOptions(HorizontalAlign.LEFT, 5), this.getVertexBufferObjectManager());
+//		text.registerEntityModifier(
+//			new SequenceEntityModifier(
+//				new ParallelEntityModifier(
+//					new AlphaModifier(10, 0.0f, 1.0f),
+//					new ScaleModifier(10, 0.5f, 1.0f)
+//				),
+//				new RotationModifier(5, 0, 360)
+//			)
+//		);
+//		text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		
+		this.mScene.attachChild(text);
+		
 		return this.mScene;
 	}
 
 	@Override
-	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
-			final ITouchArea pTouchArea, final float pTouchAreaLocalX,
-			final float pTouchAreaLocalY) {
+	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final ITouchArea pTouchArea, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
 		return false;
 	}
 
 	@Override
-	public boolean onSceneTouchEvent(final Scene pScene,
-			final TouchEvent pSceneTouchEvent) {
+	public boolean onSceneTouchEvent(final Scene pScene, final TouchEvent pSceneTouchEvent) {
 		boolean result = false;
 		if (this.mPhysicsWorld != null) {
 			if (pSceneTouchEvent.isActionDown() && allowBulletCreation) {
@@ -263,31 +212,28 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		int rectanglePY[] = { CAMERA_HEIGHT - 2, 0, 0, 0 };
 		int retangleWidth[] = { CAMERA_WIDTH, CAMERA_WIDTH, 2, 2 };
 		int rectangleHeigth[] = { 2, 2, CAMERA_HEIGHT, CAMERA_HEIGHT };
-		final VertexBufferObjectManager vertexBufferObjectManager = this
-				.getVertexBufferObjectManager();
-		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0,
-				0f, 0.5f);
+		final VertexBufferObjectManager vertexBufferObjectManager = this.getVertexBufferObjectManager();
+		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0f, 0.5f);
 		for (int i = 0; i < 4; ++i) {
-			final Rectangle r = new Rectangle(rectanglePX[i], rectanglePY[i],
-					retangleWidth[i], rectangleHeigth[i],
-					vertexBufferObjectManager);
-			PhysicsFactory.createBoxBody(this.mPhysicsWorld, r,
-					BodyType.StaticBody, wallFixtureDef);
+			final Rectangle r = new Rectangle(rectanglePX[i], rectanglePY[i], retangleWidth[i], rectangleHeigth[i], vertexBufferObjectManager);
+			PhysicsFactory.createBoxBody(this.mPhysicsWorld, r, BodyType.StaticBody, wallFixtureDef);
 			this.mScene.attachChild(r);
 		}
 	}
 
 	private void addTank(final float pX, final float pY) {
-		// Log.d(GameActivity.TAG, "Tank position: X " + pX + " Y " + pY);
-		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture, TANK_TYPE);
+		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture, Game.TANK_TYPE);
 		((Body) mTank.getUserData()).setFixedRotation(true);
 	}
 
 	private void addZombie(final float pX, final float pY) {
-		// Log.d(GameActivity.TAG, "Zombie position: X " + pX + " Y " + pY);
-		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY,
-				mZombieTexture, NORMAL_ZOMBIE_TYPE);
+		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY, mZombieTexture, Game.NORMAL_ZOMBIE_TYPE);
+		Body zombieBody = (Body) mTank.getUserData();
 
+		MassData zombieMassData = zombieBody.getMassData();
+		zombieMassData.mass = 0f;
+		zombieBody.setMassData(zombieMassData);
+		
 		moveSprite(ZOMBIE_VELOCITY, (Body) zombie.getUserData());
 	}
 
@@ -295,21 +241,18 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 		float pX = mTank.getX() + TANK_WIDTH / 4;
 		float pY = mTank.getY() - TANK_HEIGHT / 2;
-		// Log.d(GameActivity.TAG, "Bullet position: X " + pX + " Y " + pY);
 
-		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY,
-				mBulletTexture, BULLET_TYPE);
+		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY, mBulletTexture, Game.BULLET_TYPE);
 
 		moveSprite(BULLET_VELOCITY, (Body) bullet.getUserData());
 
-		getEngine().registerUpdateHandler(
-				new TimerHandler(DELAY_BULLET, new ITimerCallback() {
-					@Override
-					public void onTimePassed(TimerHandler pTimerHandler) {
-						getEngine().getTouchController().reset(); // Peligroso
-						allowBulletCreation = true;
-					}
-				}));
+		getEngine().registerUpdateHandler(new TimerHandler(DELAY_BULLET, new ITimerCallback() {
+			@Override
+			public void onTimePassed(TimerHandler pTimerHandler) {
+				getEngine().getTouchController().reset(); // Peligroso
+				allowBulletCreation = true;
+			}
+		}));
 	}
 
 	private void moveSprite(int velocity, Body b) {
@@ -318,20 +261,15 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		Vector2Pool.recycle(vector);
 	}
 
-	private AnimatedSprite createAnimatedSprite(float density, float pX,
-			float pY, TiledTextureRegion t, int type) {
+	private AnimatedSprite createAnimatedSprite(float density, float pX, float pY, TiledTextureRegion t, int type) {
 
-		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(
-				density, 0.1f, 0.5f);
+		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(density, 0.1f, 0.5f);
 
-		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t,
-				this.getVertexBufferObjectManager());
+		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t, this.getVertexBufferObjectManager());
 
-		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld,
-				sprite, BodyType.DynamicBody, objectFixtureDef);
+		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, BodyType.DynamicBody, objectFixtureDef);
 
-		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(
-				sprite, body, true, true));
+		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(sprite, body, true, true));
 
 		SpriteHolder holder = new SpriteHolder();
 		holder.sprite = sprite;
@@ -351,7 +289,18 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	public void onAccelerationAccuracyChanged(AccelerationData pAccelerationData) {
 	}
 
-	private static class SpriteHolder {
+	public void updateText() {
+		text.setText(REMAINING_LIFES_STRING + game.getRemainingLife() + "\n" + SCORE_STRING + game.getScore());
+	}
+
+	public void gameOver() {
+		Intent intent = new Intent(this, GameOverActivity.class);
+		intent.putExtra("puntuacion", game.getScore());
+		startActivity(intent);
+		finish();
+	}
+
+	public static class SpriteHolder {
 		public AnimatedSprite sprite;
 		public Body body;
 		public int type; // 1 == bullet

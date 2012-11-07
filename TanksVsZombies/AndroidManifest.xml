@@ -53,13 +53,8 @@
             android:label="@string/game_title" >
         </activity>
         <activity
-            android:name=".Services.ConnectServiceActivity"
+            android:name=".services.ConnectServiceActivity"
             android:label="@string/title_activity_connect_service" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
