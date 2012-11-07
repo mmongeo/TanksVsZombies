@@ -44,18 +44,18 @@ import org.andengine.util.color.Color;
 
 import android.content.Intent;
 import android.hardware.SensorManager;
-import android.media.ToneGenerator;
 import android.opengl.GLES20;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.MassData;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.game.VerticalParallaxBackground.VerticalParallaxEntity;
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameOverActivity;
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.MainMenuActvity;
+
+
 
 public class GameActivity extends SimpleBaseGameActivity implements
 		IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
@@ -110,35 +110,22 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED,
-				new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
+		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
 	}
 
 	@Override
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		this.mBitmapTextureAtlas = new BitmapTextureAtlas(
-				this.getTextureManager(), 400, 200, TextureOptions.BILINEAR);
-		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"tankTile.png", 0, 0, 6, 4);
-		this.mBulletTexture = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"bullet.png", 301, 0, 1, 1);
-		this.mZombieTexture = BitmapTextureAtlasTextureRegionFactory
-				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"zombieP.png", 321, 0, 1, 1);
+		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 400, 200, TextureOptions.BILINEAR);
+		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "tankTile.png", 0, 0, 6, 4);
+		this.mBulletTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "bullet.png", 301, 0, 1, 1);
+		this.mZombieTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "zombieP.png", 321, 0, 1, 1);
 		this.mBitmapTextureAtlas.load();
 
-		this.mParallaxTexture = new BitmapTextureAtlas(
-				this.getTextureManager(), 512, 1024);
-		this.mBackLayer = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(this.mParallaxTexture, this, "background.png",
-						0, 0);
-		this.mFrontLayer = BitmapTextureAtlasTextureRegionFactory
-				.createFromAsset(this.mParallaxTexture, this,
-						"cactusLayer.png", 0, 512);
+		this.mParallaxTexture = new BitmapTextureAtlas(this.getTextureManager(), 512, 1024);
+		this.mBackLayer = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mParallaxTexture, this, "background.png", 0, 0);
+		this.mFrontLayer = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mParallaxTexture, this, "cactusLayer.png", 0, 512);
 		// this.mParallaxLayerMid =
 		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAutoParallaxBackgroundTexture,
 		// this, "parallax_background_layer_mid.png", 0, 669);
@@ -166,22 +153,14 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	public Scene onCreateScene() {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
-		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0,
-				SensorManager.GRAVITY_DEATH_STAR_I), false); // death star
-																// gravity!!!!
-		VertexBufferObjectManager vertexBufferObjectManager = this
-				.getVertexBufferObjectManager();
+		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0, SensorManager.GRAVITY_DEATH_STAR_I), false); // death star
+																											// gravity!!!!
+		VertexBufferObjectManager vertexBufferObjectManager = this.getVertexBufferObjectManager();
 		// AutoParallaxBackground (float pRed, float pGreen, float pBlue, float
 		// pParallaxChangePerSecond)
-		AutoVerticalParallaxBackground autoParallaxBackground = new AutoVerticalParallaxBackground(
-				0, 0, 0, 5);
-		autoParallaxBackground
-				.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f,
-						new Sprite(0, CAMERA_HEIGHT
-								- this.mBackLayer.getHeight(), this.mBackLayer,
-								vertexBufferObjectManager)));
-		autoParallaxBackground
-				.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f,
+		AutoVerticalParallaxBackground autoParallaxBackground = new AutoVerticalParallaxBackground(0, 0, 0, 5);
+		autoParallaxBackground.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f, new Sprite(0, CAMERA_HEIGHT - this.mBackLayer.getHeight(), this.mBackLayer, vertexBufferObjectManager)));
+		autoParallaxBackground.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f,
 						new Sprite(0, CAMERA_HEIGHT
 								- this.mFrontLayer.getHeight(),
 								this.mFrontLayer, vertexBufferObjectManager)));
@@ -216,20 +195,11 @@ public class GameActivity extends SimpleBaseGameActivity implements
 				+ game.getRemainingLife() + "\n" + SCORE_STRING
 				+ game.getScore(), new TickerTextOptions(HorizontalAlign.LEFT,
 				5), this.getVertexBufferObjectManager());
-		// text.registerEntityModifier(
-		// new SequenceEntityModifier(
-		// new ParallelEntityModifier(
-		// new AlphaModifier(10, 0.0f, 1.0f),
-		// new ScaleModifier(10, 0.5f, 1.0f)
-		// ),
-		// new RotationModifier(5, 0, 360)
-		// )
-		// );
-		// text.setBlendFunction(GLES20.GL_SRC_ALPHA,
-		// GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
 
 		this.mScene.attachChild(text);
 		this.createMenuScene();
+
 		return this.mScene;
 	}
 
@@ -315,21 +285,13 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	}
 
 	private void addTank(final float pX, final float pY) {
-		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture, Game.TANK_TYPE);
+		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture, Game.TANK_TYPE, BodyType.DynamicBody);
 		mTank.animate(100);
-
 		((Body) mTank.getUserData()).setFixedRotation(true);
 	}
 
 	private void addZombie(final float pX, final float pY) {
-		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY,
-				mZombieTexture, Game.NORMAL_ZOMBIE_TYPE);
-		Body zombieBody = (Body) mTank.getUserData();
-
-		MassData zombieMassData = zombieBody.getMassData();
-		zombieMassData.mass = 0f;
-		zombieBody.setMassData(zombieMassData);
-
+		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY, mZombieTexture, Game.NORMAL_ZOMBIE_TYPE, BodyType.KinematicBody);
 		moveSprite(ZOMBIE_VELOCITY, (Body) zombie.getUserData());
 	}
 
@@ -338,8 +300,7 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		float pX = mTank.getX() + TANK_WIDTH / 4;
 		float pY = mTank.getY() - TANK_HEIGHT / 2;
 
-		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY,
-				mBulletTexture, Game.BULLET_TYPE);
+		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY, mBulletTexture, Game.BULLET_TYPE, BodyType.DynamicBody);
 
 		moveSprite(BULLET_VELOCITY, (Body) bullet.getUserData());
 
@@ -359,8 +320,7 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		Vector2Pool.recycle(vector);
 	}
 
-	private AnimatedSprite createAnimatedSprite(float density, float pX,
-			float pY, TiledTextureRegion t, int type) {
+	private AnimatedSprite createAnimatedSprite(float density, float pX, float pY, TiledTextureRegion t, int type, BodyType bodyType) {
 
 		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(
 				density, 0.1f, 0.5f);
@@ -368,8 +328,7 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t,
 				this.getVertexBufferObjectManager());
 
-		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld,
-				sprite, BodyType.DynamicBody, objectFixtureDef);
+		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, bodyType, objectFixtureDef);
 
 		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(
 				sprite, body, true, true));
