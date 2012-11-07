@@ -44,27 +44,30 @@ import org.andengine.util.color.Color;
 
 import android.content.Intent;
 import android.hardware.SensorManager;
+import android.media.ToneGenerator;
 import android.opengl.GLES20;
-import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.MassData;
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameOverActivity;
+
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.game.VerticalParallaxBackground.VerticalParallaxEntity;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameOverActivity;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.MainMenuActvity;
 
-public class GameActivity extends SimpleBaseGameActivity implements IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
+public class GameActivity extends SimpleBaseGameActivity implements
+		IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
 
-//	private static final String TAG = "GameActivity";
+	// private static final String TAG = "GameActivity";
 
 	private static final int CAMERA_WIDTH = 360;
 	private static final int CAMERA_HEIGHT = 240;
-	
+
 	private static final int TANK_WIDTH = 50;
 	private static final int TANK_HEIGHT = 50;
-	
+
 	private static final int BULLET_VELOCITY = -30;
 	private static final int ZOMBIE_VELOCITY = 1;
 
@@ -75,8 +78,9 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 
 	private static final String REMAINING_LIFES_STRING = "Vidas Restantes: ";
 	private static final String SCORE_STRING = "Puntaje: ";
-	private static final float FONT_SIZE = 12;
-	
+	private static final float FONT_SIZE_HUD = 12;
+	private static final float FONT_SIZE_MENU = 20;
+
 	private BitmapTextureAtlas mBitmapTextureAtlas;
 	private TiledTextureRegion mTankTexture;
 	private TiledTextureRegion mBulletTexture;
@@ -90,7 +94,8 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 	private Scene mScene;
 	private PhysicsWorld mPhysicsWorld;
 	private float mGravityX;
-	private Font mFont;
+	private Font mFontHUD;
+	private Font mFontMenu;
 	// private float mGravityY;
 
 	private Text text;
@@ -100,6 +105,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 	private boolean allowBulletCreation = true;
 
 	private MenuScene mMenuScene;
+	private PauseableTimerHandler mTimer;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -137,14 +143,23 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAutoParallaxBackgroundTexture,
 		// this, "parallax_background_layer_mid.png", 0, 669);
 		this.mParallaxTexture.load();
-				// Para la fuente
-		ITexture fontTexture = new BitmapTextureAtlas(this.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+		// Para la fuente
+
+		ITexture fontTextureHUD = new BitmapTextureAtlas(
+				this.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+		ITexture fontTextureMenu = new BitmapTextureAtlas(
+				this.getTextureManager(), 256, 256, TextureOptions.BILINEAR);
+
 		FontFactory.setAssetBasePath("font/");
-		this.mFont = FontFactory.createFromAsset(this.getFontManager(), fontTexture, this.getAssets(), "Adventure.ttf", FONT_SIZE, true, Color.BLACK.getARGBPackedInt());
-		this.mFont.load();
-		
-		
-	
+		this.mFontHUD = FontFactory.createFromAsset(this.getFontManager(),
+				fontTextureHUD, this.getAssets(), "Adventure.ttf",
+				FONT_SIZE_HUD, true, Color.BLACK.getARGBPackedInt());
+		this.mFontMenu = FontFactory.createFromAsset(this.getFontManager(),
+				fontTextureMenu, this.getAssets(), "Adventure.ttf",
+				FONT_SIZE_MENU, true, Color.BLACK.getARGBPackedInt());
+		this.mFontHUD.load();
+		this.mFontMenu.load();
+
 	}
 
 	@Override
@@ -171,7 +186,6 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 								- this.mFrontLayer.getHeight(),
 								this.mFrontLayer, vertexBufferObjectManager)));
 
-
 		this.mScene = new Scene();
 		this.mScene.setBackground(autoParallaxBackground);
 		this.mScene.setOnSceneTouchListener(this);
@@ -183,114 +197,52 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		mPhysicsWorld.setContactListener(new GameContactListener(this, game));
 
 		// Creador de Zombies
-		getEngine().registerUpdateHandler(new TimerHandler(DELAY_ZOMBIE, true, new ITimerCallback() {
-
-			@Override
-			public void onTimePassed(TimerHandler pTimerHandler) {
-				addZombie((float) (Math.random() * CAMERA_HEIGHT), 0f);
-				Body bodyVector[] = { contact.getFixtureA().getBody(),
-						contact.getFixtureB().getBody() };
-				SpriteHolder spriteVector[] = { null, null };
-				for (int i = 0; i < 2; ++i) {
-					if ((SpriteHolder) bodyVector[i].getUserData() != null) {
-						spriteVector[i] = (SpriteHolder) bodyVector[i]
-								.getUserData();
-					}
-				}
-
-				verifyCases(spriteVector[0], spriteVector[1]);
-			}
-
-			// permite nulos en los SpriteHolder
-			private void verifyCases(SpriteHolder a, SpriteHolder b) {
-
-				Log.d(TAG, "LOL " + (a == null) + " " + (b == null));
-
-				int typeA[] = { BULLET_TYPE, ANY_TYPE, BULLET_TYPE,
-						NORMAL_ZOMBIE_TYPE };
-				int typeB[] = { ANY_TYPE, BULLET_TYPE, NORMAL_ZOMBIE_TYPE,
-						BULLET_TYPE };
-				boolean killA[] = { true, false, true, true };
-				boolean killB[] = { false, true, true, true };
-
-				for (int i = 0; i < 4; ++i) {
-					if (verifyTypes(a, b, typeA[i], typeB[i])) {
-						killSprites(a, b, killA[i], killB[i]);
-					}
-				}
-
-			}
-
-			// permite nulos en los SpriteHolder
-			private boolean verifyTypes(SpriteHolder a, SpriteHolder b,
-					int typeA, int typeB) {
-				return (a != null && a.type == typeA || typeA == ANY_TYPE)
-						&& (b != null && b.type == typeB || typeB == ANY_TYPE);
-			}
-
-			private void killSprites(final SpriteHolder a,
-					final SpriteHolder b, final boolean killA,
-					final boolean killB) {
-
-				getEngine().runOnUpdateThread(new Runnable() {
-					public void run() {
-						if (killA) {
-							kill(a);
-						}
-						if (killB) {
-							kill(b);
-						}
-					}
-
-					private void kill(SpriteHolder victim) {
-						victim.body.setActive(false);
-						victim.sprite.setVisible(false);
-					}
-				});
-			}
-
-		});
-
-		// Creador de Zombies
-		getEngine().registerUpdateHandler(
-				new TimerHandler(DELAY_ZOMBIE, true, new ITimerCallback() {
+		mTimer = new PauseableTimerHandler(DELAY_ZOMBIE, true,
+				new ITimerCallback() {
 
 					@Override
 					public void onTimePassed(TimerHandler pTimerHandler) {
 						addZombie((float) (Math.random() * CAMERA_HEIGHT), 0f);
-
 					}
-				}));
+				});
 
+		getEngine().registerUpdateHandler(mTimer);
 
 		createRectangle();
 
 		addTank(CAMERA_WIDTH / 2 - TANK_WIDTH / 2, CAMERA_HEIGHT - TANK_HEIGHT);
 
-		text = new TickerText(10, 10, this.mFont, REMAINING_LIFES_STRING + game.getRemainingLife() + "\n" + SCORE_STRING + game.getScore(), new TickerTextOptions(HorizontalAlign.LEFT, 5), this.getVertexBufferObjectManager());
-//		text.registerEntityModifier(
-//			new SequenceEntityModifier(
-//				new ParallelEntityModifier(
-//					new AlphaModifier(10, 0.0f, 1.0f),
-//					new ScaleModifier(10, 0.5f, 1.0f)
-//				),
-//				new RotationModifier(5, 0, 360)
-//			)
-//		);
-//		text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-		
+		text = new TickerText(10, 10, this.mFontHUD, REMAINING_LIFES_STRING
+				+ game.getRemainingLife() + "\n" + SCORE_STRING
+				+ game.getScore(), new TickerTextOptions(HorizontalAlign.LEFT,
+				5), this.getVertexBufferObjectManager());
+		// text.registerEntityModifier(
+		// new SequenceEntityModifier(
+		// new ParallelEntityModifier(
+		// new AlphaModifier(10, 0.0f, 1.0f),
+		// new ScaleModifier(10, 0.5f, 1.0f)
+		// ),
+		// new RotationModifier(5, 0, 360)
+		// )
+		// );
+		// text.setBlendFunction(GLES20.GL_SRC_ALPHA,
+		// GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
 		this.mScene.attachChild(text);
-		
+		this.createMenuScene();
 		return this.mScene;
 	}
 
 	@Override
-	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent, final ITouchArea pTouchArea, final float pTouchAreaLocalX, final float pTouchAreaLocalY) {
+	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
+			final ITouchArea pTouchArea, final float pTouchAreaLocalX,
+			final float pTouchAreaLocalY) {
 		return false;
 	}
 
 	@Override
-	public boolean onSceneTouchEvent(final Scene pScene, final TouchEvent pSceneTouchEvent) {
+	public boolean onSceneTouchEvent(final Scene pScene,
+			final TouchEvent pSceneTouchEvent) {
 		boolean result = false;
 		if (this.mPhysicsWorld != null) {
 			if (pSceneTouchEvent.isActionDown() && allowBulletCreation) {
@@ -337,21 +289,28 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		int rectanglePY[] = { CAMERA_HEIGHT - 2, 0, 0, 0 };
 		int retangleWidth[] = { CAMERA_WIDTH, CAMERA_WIDTH, 2, 2 };
 		int rectangleHeigth[] = { 2, 2, CAMERA_HEIGHT, CAMERA_HEIGHT };
-		final VertexBufferObjectManager vertexBufferObjectManager = this.getVertexBufferObjectManager();
-		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0, 0f, 0.5f);
+		final VertexBufferObjectManager vertexBufferObjectManager = this
+				.getVertexBufferObjectManager();
+		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0,
+				0f, 0.5f);
 		for (int i = 0; i < 4; ++i) {
-			final Rectangle r = new Rectangle(rectanglePX[i], rectanglePY[i], retangleWidth[i], rectangleHeigth[i], vertexBufferObjectManager);
-			PhysicsFactory.createBoxBody(this.mPhysicsWorld, r, BodyType.StaticBody, wallFixtureDef);
+			final Rectangle r = new Rectangle(rectanglePX[i], rectanglePY[i],
+					retangleWidth[i], rectangleHeigth[i],
+					vertexBufferObjectManager);
+			PhysicsFactory.createBoxBody(this.mPhysicsWorld, r,
+					BodyType.StaticBody, wallFixtureDef);
 			this.mScene.attachChild(r);
 		}
 	}
 
 	@Override
 	public void onBackPressed() {
-		if(mEngine.isRunning()){
-			mEngine.stop();
-		}else{
-			mEngine.start();
+		if (this.mScene.hasChildScene()) {
+			mTimer.resume();
+			this.mScene.back();
+		} else {
+			mTimer.pause();
+			this.mScene.setChildScene(this.mMenuScene, false, true, true);
 		}
 	}
 
@@ -363,13 +322,14 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 	}
 
 	private void addZombie(final float pX, final float pY) {
-		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY, mZombieTexture, Game.NORMAL_ZOMBIE_TYPE);
+		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY,
+				mZombieTexture, Game.NORMAL_ZOMBIE_TYPE);
 		Body zombieBody = (Body) mTank.getUserData();
 
 		MassData zombieMassData = zombieBody.getMassData();
 		zombieMassData.mass = 0f;
 		zombieBody.setMassData(zombieMassData);
-		
+
 		moveSprite(ZOMBIE_VELOCITY, (Body) zombie.getUserData());
 	}
 
@@ -378,17 +338,19 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		float pX = mTank.getX() + TANK_WIDTH / 4;
 		float pY = mTank.getY() - TANK_HEIGHT / 2;
 
-		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY, mBulletTexture, Game.BULLET_TYPE);
+		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY,
+				mBulletTexture, Game.BULLET_TYPE);
 
 		moveSprite(BULLET_VELOCITY, (Body) bullet.getUserData());
 
-		getEngine().registerUpdateHandler(new TimerHandler(DELAY_BULLET, new ITimerCallback() {
-			@Override
-			public void onTimePassed(TimerHandler pTimerHandler) {
-				getEngine().getTouchController().reset(); // Peligroso
-				allowBulletCreation = true;
-			}
-		}));
+		getEngine().registerUpdateHandler(
+				new TimerHandler(DELAY_BULLET, new ITimerCallback() {
+					@Override
+					public void onTimePassed(TimerHandler pTimerHandler) {
+						getEngine().getTouchController().reset(); // Peligroso
+						allowBulletCreation = true;
+					}
+				}));
 	}
 
 	private void moveSprite(int velocity, Body b) {
@@ -397,15 +359,20 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		Vector2Pool.recycle(vector);
 	}
 
-	private AnimatedSprite createAnimatedSprite(float density, float pX, float pY, TiledTextureRegion t, int type) {
+	private AnimatedSprite createAnimatedSprite(float density, float pX,
+			float pY, TiledTextureRegion t, int type) {
 
-		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(density, 0.1f, 0.5f);
+		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(
+				density, 0.1f, 0.5f);
 
-		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t, this.getVertexBufferObjectManager());
+		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t,
+				this.getVertexBufferObjectManager());
 
-		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, BodyType.DynamicBody, objectFixtureDef);
+		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld,
+				sprite, BodyType.DynamicBody, objectFixtureDef);
 
-		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(sprite, body, true, true));
+		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(
+				sprite, body, true, true));
 
 		SpriteHolder holder = new SpriteHolder();
 		holder.sprite = sprite;
@@ -426,12 +393,19 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 	}
 
 	public void updateText() {
-		text.setText(REMAINING_LIFES_STRING + game.getRemainingLife() + "\n" + SCORE_STRING + game.getScore());
+		text.setText(REMAINING_LIFES_STRING + game.getRemainingLife() + "\n"
+				+ SCORE_STRING + game.getScore());
 	}
 
 	public void gameOver() {
 		Intent intent = new Intent(this, GameOverActivity.class);
 		intent.putExtra("puntuacion", game.getScore());
+		startActivity(intent);
+		finish();
+	}
+
+	public void mainMenu() {
+		Intent intent = new Intent(this, MainMenuActvity.class);
 		startActivity(intent);
 		finish();
 	}
@@ -443,35 +417,50 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 	}
 
 	protected void createMenuScene() {
-			this.mMenuScene = new MenuScene(this.mCamera);
-			final MenuScene menuScene = new MenuScene(this.mCamera);
+		this.mMenuScene = new MenuScene(this.mCamera);
 
-			final IMenuItem resetMenuItem = new ColorMenuItemDecorator(new TextMenuItem(REGRESAR_INICIO, null, "Volver al inicio", this.getVertexBufferObjectManager()), new Color(1,0,0), new Color(0,0,0));
-			resetMenuItem.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-			menuScene.addMenuItem(resetMenuItem);
+		final IMenuItem returnItemMenu = new ColorMenuItemDecorator(
+				new TextMenuItem(REGRESAR_INICIO, this.mFontMenu,
+						"Volver al inicio", this.getVertexBufferObjectManager()),
+				new Color(1, 0, 0), new Color(0, 0, 0));
+		returnItemMenu.setBlendFunction(GLES20.GL_SRC_ALPHA,
+				GLES20.GL_ONE_MINUS_SRC_ALPHA);
+		mMenuScene.addMenuItem(returnItemMenu);
 
-			final IMenuItem quitMenuItem = new ColorMenuItemDecorator(new TextMenuItem(TERMINAR_PARTIDA, null, "Terminar partida", this.getVertexBufferObjectManager()), new Color(1,0,0), new Color(0,0,0));
-			quitMenuItem.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-			menuScene.addMenuItem(quitMenuItem);
+		final IMenuItem quitMenuItem = new ColorMenuItemDecorator(
+				new TextMenuItem(TERMINAR_PARTIDA, this.mFontMenu,
+						"Terminar partida", this.getVertexBufferObjectManager()),
+				new Color(1, 0, 0), new Color(0, 0, 0));
+		quitMenuItem.setBlendFunction(GLES20.GL_SRC_ALPHA,
+				GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
-			menuScene.buildAnimations();
+		mMenuScene.addMenuItem(quitMenuItem);
 
-			menuScene.setBackgroundEnabled(false);
+		mMenuScene.buildAnimations();
 
-			menuScene.setOnMenuItemClickListener(new ItemListener());
-			
-	} 
-	
-	class ItemListener implements IOnMenuItemClickListener{
+		mMenuScene.setBackgroundEnabled(false);
+
+		mMenuScene.setOnMenuItemClickListener(new ItemListener());
+
+	}
+
+	class ItemListener implements IOnMenuItemClickListener {
 
 		@Override
 		public boolean onMenuItemClicked(MenuScene pMenuScene,
 				IMenuItem pMenuItem, float pMenuItemLocalX,
 				float pMenuItemLocalY) {
-			// TODO Auto-generated method stub
+			switch (pMenuItem.getID()) {
+			case REGRESAR_INICIO:
+				mainMenu();
+				break;
+			case TERMINAR_PARTIDA:
+				gameOver();
+				break;
+			}
 			return false;
 		}
-				
+
 	}
 
 }
