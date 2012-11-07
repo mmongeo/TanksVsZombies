@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
@@ -36,7 +35,6 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
 
 		try {
 			TableUtils.createTable(connectionSource, Score.class);
-			insertData();
 		} catch (SQLException e) {
 			Log.e(TAG, "Can't create database", e);
 		}
@@ -48,11 +46,6 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
 
 	}
 
-	private void insertData() throws SQLException {
-		Dao<Score, Integer> scoreDao = getDao(Score.class);
-		scoreDao.createOrUpdate(new Score("Rubén", Integer.MAX_VALUE));
-		scoreDao.createOrUpdate(new Score("Mario", 0));
-		scoreDao.createOrUpdate(new Score("Marco", 0));
-	}
+
 
 }
