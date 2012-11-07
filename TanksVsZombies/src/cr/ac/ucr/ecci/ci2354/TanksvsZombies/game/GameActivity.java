@@ -43,7 +43,6 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef.BodyType;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.MassData;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameOverActivity;
 
@@ -222,18 +221,12 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 	}
 
 	private void addTank(final float pX, final float pY) {
-		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture, Game.TANK_TYPE);
+		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture, Game.TANK_TYPE, BodyType.DynamicBody);
 		((Body) mTank.getUserData()).setFixedRotation(true);
 	}
 
 	private void addZombie(final float pX, final float pY) {
-		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY, mZombieTexture, Game.NORMAL_ZOMBIE_TYPE);
-		Body zombieBody = (Body) mTank.getUserData();
-
-		MassData zombieMassData = zombieBody.getMassData();
-		zombieMassData.mass = 0f;
-		zombieBody.setMassData(zombieMassData);
-		
+		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY, mZombieTexture, Game.NORMAL_ZOMBIE_TYPE, BodyType.KinematicBody);
 		moveSprite(ZOMBIE_VELOCITY, (Body) zombie.getUserData());
 	}
 
@@ -242,7 +235,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		float pX = mTank.getX() + TANK_WIDTH / 4;
 		float pY = mTank.getY() - TANK_HEIGHT / 2;
 
-		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY, mBulletTexture, Game.BULLET_TYPE);
+		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY, mBulletTexture, Game.BULLET_TYPE, BodyType.KinematicBody);
 
 		moveSprite(BULLET_VELOCITY, (Body) bullet.getUserData());
 
@@ -261,13 +254,14 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		Vector2Pool.recycle(vector);
 	}
 
-	private AnimatedSprite createAnimatedSprite(float density, float pX, float pY, TiledTextureRegion t, int type) {
+	private AnimatedSprite createAnimatedSprite(float density, float pX, float pY, TiledTextureRegion t, int type, BodyType bodyType) {
 
 		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(density, 0.1f, 0.5f);
 
 		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t, this.getVertexBufferObjectManager());
 
-		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, BodyType.DynamicBody, objectFixtureDef);
+//		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, BodyType.DynamicBody, objectFixtureDef);
+		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, bodyType, objectFixtureDef);
 
 		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(sprite, body, true, true));
 
