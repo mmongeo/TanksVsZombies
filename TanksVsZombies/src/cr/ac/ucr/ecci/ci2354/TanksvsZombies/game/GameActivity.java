@@ -142,17 +142,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		addTank(CAMERA_WIDTH / 2 - TANK_WIDTH / 2, CAMERA_HEIGHT - TANK_HEIGHT);
 
 		text = new TickerText(10, 10, this.mFont, REMAINING_LIFES_STRING + game.getRemainingLife() + "\n" + SCORE_STRING + game.getScore(), new TickerTextOptions(HorizontalAlign.LEFT, 5), this.getVertexBufferObjectManager());
-//		text.registerEntityModifier(
-//			new SequenceEntityModifier(
-//				new ParallelEntityModifier(
-//					new AlphaModifier(10, 0.0f, 1.0f),
-//					new ScaleModifier(10, 0.5f, 1.0f)
-//				),
-//				new RotationModifier(5, 0, 360)
-//			)
-//		);
-//		text.setBlendFunction(GLES20.GL_SRC_ALPHA, GLES20.GL_ONE_MINUS_SRC_ALPHA);
-		
+
 		this.mScene.attachChild(text);
 		
 		return this.mScene;
@@ -235,7 +225,7 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 		float pX = mTank.getX() + TANK_WIDTH / 4;
 		float pY = mTank.getY() - TANK_HEIGHT / 2;
 
-		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY, mBulletTexture, Game.BULLET_TYPE, BodyType.KinematicBody);
+		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY, mBulletTexture, Game.BULLET_TYPE, BodyType.DynamicBody);
 
 		moveSprite(BULLET_VELOCITY, (Body) bullet.getUserData());
 
@@ -260,7 +250,6 @@ public class GameActivity extends SimpleBaseGameActivity implements IAcceleratio
 
 		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t, this.getVertexBufferObjectManager());
 
-//		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, BodyType.DynamicBody, objectFixtureDef);
 		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, bodyType, objectFixtureDef);
 
 		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(sprite, body, true, true));
