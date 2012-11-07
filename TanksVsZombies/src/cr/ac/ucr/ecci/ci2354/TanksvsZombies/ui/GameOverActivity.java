@@ -7,7 +7,7 @@ import android.view.View;
 import com.actionbarsherlock.app.SherlockActivity;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.Services.ConnectServiceActivity;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.services.ConnectServiceActivity;
 
 public class GameOverActivity extends SherlockActivity {
 

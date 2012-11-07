@@ -1,4 +1,4 @@
-package cr.ac.ucr.ecci.ci2354.TanksvsZombies.Services;
+package cr.ac.ucr.ecci.ci2354.TanksvsZombies.services;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -55,8 +55,8 @@ public class ConnectServiceActivity extends Activity {
 	private void post(int puntuacion) {
 		// TODO Auto-generated method stub
 		Bundle parameters = new Bundle();
-		parameters.putString("message", "He conseguido una puntuación de "+puntuacion+" en el juego TANKS vs ZOMBIES");
-		parameters.putString("description", "Nueva puntuación");
+		parameters.putString("message", "He conseguido una puntuaciï¿½n de "+puntuacion+" en el juego TANKS vs ZOMBIES");
+		parameters.putString("description", "Nueva puntuaciï¿½n");
 		parameters.putString("picture", "http://i49.tinypic.com/2a9d3td.png");
 		try {
 			// mAsyncRunner.request("me", null);
@@ -128,10 +128,10 @@ public class ConnectServiceActivity extends Activity {
 //					
 //				}
 //			},null);
-			Log.d("", "SE LOGRÓ RESPUESTA ");
-			showToast("Se realizó con éxito la publicación del puntaje en tu muro");
+			Log.d("", "SE LOGRï¿½ RESPUESTA ");
+			showToast("Se realizï¿½ con ï¿½xito la publicaciï¿½n del puntaje en tu muro");
 		} catch (Exception e) {
-			showToast("Falló la publicación del puntaje en tu muro");
+			showToast("Fallï¿½ la publicaciï¿½n del puntaje en tu muro");
 		}
 
 	}
