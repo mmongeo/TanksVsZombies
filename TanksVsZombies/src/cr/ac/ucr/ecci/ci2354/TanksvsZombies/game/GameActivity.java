@@ -1,6 +1,7 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.game;
 
 import org.andengine.engine.camera.Camera;
+import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
@@ -82,6 +83,7 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	private static final float FONT_SIZE_MENU = 20;
 
 	private BitmapTextureAtlas mBitmapTextureAtlas;
+	private float tiempoDificultad = 1f; // cada 15 segundos se actualiza
 	private TiledTextureRegion mTankTexture;
 	private TiledTextureRegion mBulletTexture;
 	private TiledTextureRegion mZombieTexture;
@@ -105,7 +107,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	private boolean allowBulletCreation = true;
 
 	private MenuScene mMenuScene;
-	private PauseableTimerHandler mTimer;
+	private PauseableTimerHandler mTimerOne;
+	private PauseableTimerHandler mTimerTwo;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
@@ -176,17 +179,35 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		mPhysicsWorld.setContactListener(new GameContactListener(this, game));
 
 		// Creador de Zombies
-		mTimer = new PauseableTimerHandler(DELAY_ZOMBIE, true,
+		mTimerOne = new PauseableTimerHandler(DELAY_ZOMBIE, true,
 				new ITimerCallback() {
 
 					@Override
 					public void onTimePassed(TimerHandler pTimerHandler) {
-						addZombie((float) (Math.random() * CAMERA_HEIGHT), 0f);
+						addZombie((float) (Math.random() * CAMERA_WIDTH), 0f);
 					}
 				});
-
-		getEngine().registerUpdateHandler(mTimer);
-
+		
+		mTimerTwo = new PauseableTimerHandler(DELAY_ZOMBIE + 1, true, new ITimerCallback() {
+			
+			@Override
+			public void onTimePassed(TimerHandler pTimerHandler) {
+				addZombie((float) (Math.random() * CAMERA_WIDTH), 0f);
+			}
+		});
+		
+		
+		mEngine.registerUpdateHandler(mTimerOne);
+		mEngine.registerUpdateHandler(mTimerTwo);
+		
+		mEngine.registerUpdateHandler(new TimerHandler(tiempoDificultad, new ITimerCallback() {
+			
+			@Override
+			public void onTimePassed(TimerHandler pTimerHandler) {
+				mTimerOne.setTimerSeconds(mTimerOne.getTimerSeconds() * 0.95f);			
+				mTimerTwo.setTimerSeconds(mTimerTwo.getTimerSeconds() * 0.95f);
+			}
+		}));
 		createRectangle();
 
 		addTank(CAMERA_WIDTH / 2 - TANK_WIDTH / 2, CAMERA_HEIGHT - TANK_HEIGHT);
@@ -203,6 +224,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		return this.mScene;
 	}
 
+	
+	
 	@Override
 	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 			final ITouchArea pTouchArea, final float pTouchAreaLocalX,
@@ -276,10 +299,12 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	@Override
 	public void onBackPressed() {
 		if (this.mScene.hasChildScene()) {
-			mTimer.resume();
+			mTimerOne.resume();
+			mTimerTwo.resume();
 			this.mScene.back();
 		} else {
-			mTimer.pause();
+			mTimerOne.pause();
+			mTimerTwo.pause();
 			this.mScene.setChildScene(this.mMenuScene, false, true, true);
 		}
 	}
@@ -403,7 +428,7 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 	}
 
-	class ItemListener implements IOnMenuItemClickListener {
+	private class ItemListener implements IOnMenuItemClickListener {
 
 		@Override
 		public boolean onMenuItemClicked(MenuScene pMenuScene,
