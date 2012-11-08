@@ -358,7 +358,7 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 	public void gameOver() {
 		Intent intent = new Intent(this, GameOverActivity.class);
-		intent.putExtra("puntuacion", game.getScore());
+		intent.putExtra("puntuacion", (int) game.getScore());
 		startActivity(intent);
 		finish();
 	}

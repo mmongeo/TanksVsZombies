@@ -28,7 +28,6 @@ public class PauseableTimerHandler extends TimerHandler {
 	@Override
 	public void onUpdate(float pSecondsElapsed) {
 		if (!this.mPause) {
-			Log.d("tag","mPause no es");
 			super.onUpdate(pSecondsElapsed);
 		}
 	}
