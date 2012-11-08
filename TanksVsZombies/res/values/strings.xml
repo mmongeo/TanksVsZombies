@@ -41,5 +41,6 @@
     <string name="game_over_puntuacion">123456789</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_connect_service">ConnectServiceActivity</string>
+    <string name="game_over_textButtonFinish">Regresar al menu principal</string>
 
 </resources>

@@ -76,6 +76,11 @@ public class GameOverActivity extends SherlockActivity {
 			post((int) score.getScore());
 		}
 	}
+	
+	public void finishGame(View view){
+		startActivity(new Intent(getApplicationContext(),MainMenuActvity.class));
+		finish();
+	}
 
 	public static final String idApp = "413285808737731";
 	public static final String TOKEN = "access_token";
