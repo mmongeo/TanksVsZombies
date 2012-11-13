@@ -23,9 +23,10 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
 	public static DBHelper getHelper() {
 		return helper;
 	}
-	
+
 	private DBHelper(Context context) {
-		super(context, DATABASE_NAME, null, DATABASE_VERSION, R.raw.ormlite_config);
+		super(context, DATABASE_NAME, null, DATABASE_VERSION,
+				R.raw.ormlite_config);
 	}
 
 	@Override
@@ -42,10 +43,8 @@ public class DBHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	@Override
-	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource, int oldVersion, int newVersion) {
-
+	public void onUpgrade(SQLiteDatabase db, ConnectionSource connectionSource,
+			int oldVersion, int newVersion) {
 	}
-
-
 
 }

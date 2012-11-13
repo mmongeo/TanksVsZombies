@@ -9,13 +9,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.facebook.android.AsyncFacebookRunner;
 import com.facebook.android.AsyncFacebookRunner.RequestListener;
 import com.facebook.android.DialogError;
@@ -28,44 +28,29 @@ import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.data.DBHelper;
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.data.Score;
 
-public class GameOverActivity extends SherlockActivity {
+public class GameOverActivity extends SherlockFragmentActivity {
 
 	private static final String TAG = "GameOverActivity";
 
-	Score score = new Score();
-	Dao<Score, Integer> dao = null;
-	EditText usernameEditText;
+	public static final String ID_APP = "413285808737731";
+	public static final String TOKEN = "access_token";
+	public static final String EXPIRES = "expires_in";
+	public static final String KEY = "facebook-credentials";
+
+	private Facebook facebook;
+	private AsyncFacebookRunner mAsyncRunner;
+	private boolean firstResume = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game_over);
-
-		score.setScore(getIntent().getIntExtra("puntuacion", 0));
-
-		TextView scoreTextView = (TextView) findViewById(R.id.game_over_score);
-		usernameEditText = (EditText) findViewById(R.id.game_over_username_text);
-		scoreTextView.setText("" + score.getScore());
-		facebook = new Facebook(idApp);
-		try {
-			dao = DBHelper.getHelper().getDao(Score.class);
-		} catch (Exception e) {
-			Log.d(TAG, "Error creating DAO");
-		}
-
+		facebook = new Facebook(ID_APP);
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		score.setUser(usernameEditText.getEditableText().toString());
-		if (dao != null) {
-			try {
-				dao.createOrUpdate(score);
-			} catch (Exception e) {
-				Log.d(TAG, "Error updating DB");
-			}
-		}
 	}
 
 	public void facebookShare(View view) {
@@ -73,22 +58,14 @@ public class GameOverActivity extends SherlockActivity {
 		if (!facebook.isSessionValid()) {
 			loginAndPost();
 		} else {
-			post((int) score.getScore());
+			post(getIntent().getIntExtra("puntuacion", 0));
 		}
 	}
-	
-	public void finishGame(View view){
-		startActivity(new Intent(getApplicationContext(),MainMenuActvity.class));
+
+	public void finishGame(View view) {
+		startActivity(new Intent(getApplicationContext(), MainMenuActvity.class));
 		finish();
 	}
-
-	public static final String idApp = "413285808737731";
-	public static final String TOKEN = "access_token";
-	public static final String EXPIRES = "expires_in";
-	public static final String KEY = "facebook-credentials";
-
-	Facebook facebook;
-	AsyncFacebookRunner mAsyncRunner;
 
 	private void post(int puntuacion) {
 		// TODO Auto-generated method stub
@@ -99,41 +76,30 @@ public class GameOverActivity extends SherlockActivity {
 		parameters.putString("picture", "http://i49.tinypic.com/2a9d3td.png");
 
 		try {
-			// mAsyncRunner.request("me", null);
 			mAsyncRunner.request("me/feed", parameters, "POST",
 					new RequestListener() {
 
 						@Override
 						public void onMalformedURLException(
 								MalformedURLException e, Object state) {
-							// TODO Auto-generated method stub
-
 						}
 
 						@Override
 						public void onIOException(IOException e, Object state) {
-							// TODO Auto-generated method stub
-
 						}
 
 						@Override
 						public void onFileNotFoundException(
 								FileNotFoundException e, Object state) {
-							// TODO Auto-generated method stub
-
 						}
 
 						@Override
 						public void onFacebookError(FacebookError e,
 								Object state) {
-							// TODO Auto-generated method stub
-
 						}
 
 						@Override
 						public void onComplete(String response, Object state) {
-							// TODO Auto-generated method stub
-
 						}
 					}, null);
 			Log.d("", "SE LOGRO RESPUESTA ");
@@ -161,6 +127,12 @@ public class GameOverActivity extends SherlockActivity {
 	protected void onResume() {
 		super.onResume();
 		facebook.extendAccessToken(this, null);
+
+		if (firstResume) {
+			firstResume = false;
+			DialogFragment d = UserDialogFragment.newInstance(this);
+			d.show(getSupportFragmentManager(), "dialog");
+		}
 	}
 
 	public boolean saveCredentials(Facebook fac) {
@@ -184,33 +156,48 @@ public class GameOverActivity extends SherlockActivity {
 
 		@Override
 		public void onComplete(Bundle values) {
-			// TODO Auto-generated method stub
 			saveCredentials(facebook);
-			post((int) score.getScore());
+			post(getIntent().getIntExtra("puntuacion", 0));
 		}
 
 		@Override
 		public void onFacebookError(FacebookError e) {
-			// TODO Auto-generated method stub
 			showToast("Autenticacion con facebook fallo " + e.getMessage());
 		}
 
 		@Override
 		public void onError(DialogError e) {
-			// TODO Auto-generated method stub
 			showToast("Autenticacion con facebook fallo " + e.getMessage());
-
 		}
 
 		@Override
 		public void onCancel() {
-			// TODO Auto-generated method stub
 			showToast("Autenticacion con facebook cancelada");
 		}
 	}
 
 	private void showToast(String msj) {
 		Toast.makeText(GameOverActivity.this, msj, Toast.LENGTH_LONG).show();
+	}
+
+	public void userNameChoosed(String user) {
+		
+		Score score = new Score();
+		score.setScore(getIntent().getIntExtra("puntuacion", 0));
+		score.setUser(user);
+
+		TextView scoreTextView = (TextView) findViewById(R.id.game_over_score);
+		scoreTextView.setText("" + score.getScore());
+		
+		TextView userTextView = (TextView) findViewById(R.id.game_over_username_text);
+		userTextView.setText(user);
+		
+		try {
+			Dao<Score, Integer> dao = DBHelper.getHelper().getDao(Score.class);
+			dao.createOrUpdate(score);
+		} catch (Exception e) {
+			Log.d(TAG, "Error updating DB");
+		}
 	}
 
 }

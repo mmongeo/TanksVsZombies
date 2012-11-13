@@ -39,8 +39,10 @@
     <string name="animation_text_advance">Toque la pantalla para continuar</string>
     <string name="game_over_puntuacionStr">Puntuacion</string>
     <string name="game_over_puntuacion">123456789</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_connect_service">ConnectServiceActivity</string>
     <string name="game_over_textButtonFinish">Regresar al menu principal</string>
+    <string name="dialog_fragment_user_text">Nombre de Usuario</string>
+    <string name="dialog_fragment_user_hint">Nickname</string>
+    <string name="dialog_fragment_user_button">Ok</string>
 
 </resources>

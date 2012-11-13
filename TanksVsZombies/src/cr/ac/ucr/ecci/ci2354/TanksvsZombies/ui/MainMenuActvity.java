@@ -18,7 +18,8 @@ public class MainMenuActvity extends SherlockFragmentActivity {
 	public static final String TABS[] = { "Menú Principal", "Puntajes Altos" };
 
 	private MainMenuTabListener mTabListener;
-	private MainMenuFragmentPagerAdapter mFragmentPagerAdapter = new MainMenuFragmentPagerAdapter(getSupportFragmentManager());
+	private MainMenuFragmentPagerAdapter mFragmentPagerAdapter = new MainMenuFragmentPagerAdapter(
+			getSupportFragmentManager());
 	private ViewPager mViewPager;
 	private int mNumTabs = 2;
 
@@ -29,16 +30,18 @@ public class MainMenuActvity extends SherlockFragmentActivity {
 
 		mViewPager = (ViewPager) findViewById(R.id.activity_main_pager);
 		mViewPager.setAdapter(mFragmentPagerAdapter);
-		
-        mViewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
-            @Override
-            public void onPageSelected(int position) {
-                getSupportActionBar().setSelectedNavigationItem(position);
-            }
-        });
-		
-        mTabListener = new MainMenuTabListener(mViewPager);
-        
+
+		mViewPager
+				.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+					@Override
+					public void onPageSelected(int position) {
+						getSupportActionBar().setSelectedNavigationItem(
+								position);
+					}
+				});
+
+		mTabListener = new MainMenuTabListener(mViewPager);
+
 		getSupportActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 		for (int i = 0; i < mNumTabs; ++i) {
 			ActionBar.Tab t = getSupportActionBar().newTab();
@@ -52,11 +55,11 @@ public class MainMenuActvity extends SherlockFragmentActivity {
 	private static class MainMenuTabListener implements ActionBar.TabListener {
 
 		ViewPager viewPager;
-		
+
 		public MainMenuTabListener(ViewPager viewPager) {
 			this.viewPager = viewPager;
 		}
-		
+
 		@Override
 		public void onTabSelected(Tab tab, FragmentTransaction ft) {
 			viewPager.setCurrentItem(tab.getPosition());

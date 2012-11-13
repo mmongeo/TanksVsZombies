@@ -1,113 +1,128 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical" >
 
     <TextView
         android:id="@+id/game_over_title"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
+        android:layout_gravity="center"
         android:gravity="center"
+        android:padding="10dp"
         android:text="@string/game_over_title"
-        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:textAppearance="@android:style/TextAppearance.Large"
         android:textColor="#ffffff" />
 
-    <TextView
-        android:id="@+id/game_over_username"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/game_over_username_text"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/game_over_title"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:paddingBottom="5dp"
-        android:paddingRight="75dp"
-        android:text="@string/game_over_username"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="#ffffff" />
+        android:layout_gravity="center"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal" >
 
-    <EditText
-        android:id="@+id/game_over_username_text"
+        <TextView
+            android:id="@+id/game_over_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/game_over_username"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:id="@+id/game_over_username_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/game_over_username"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/game_over_title"
-        android:layout_toRightOf="@+id/game_over_username"
-        android:gravity="center"
-        android:inputType="textPersonName"
-        android:text="@string/game_over_username_default"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="#ffffff" />
+        android:layout_gravity="center"
+        android:orientation="horizontal" >
 
-    <TextView
-        android:id="@+id/game_over_puntuacion"
+        <TextView
+            android:id="@+id/game_over_puntuacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/game_over_puntuacionStr"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="#ffffff" />
+
+        <TextView
+            android:id="@+id/game_over_score"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="@string/game_over_puntuacion"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="#ffffff" />
+    </LinearLayout>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/game_over_username"
-        android:layout_weight="1"
-        android:gravity="right"
-        android:paddingBottom="5dp"
-        android:paddingRight="50dp"
-        android:text="@string/game_over_puntuacionStr"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="#ffffff" />
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal" >
 
-    <TextView
-        android:id="@+id/game_over_score"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/game_over_puntuacion"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/game_over_username"
-        android:layout_toRightOf="@+id/game_over_puntuacion"
-        android:layout_weight="2"
-        android:gravity="center"
-        android:text="@string/game_over_puntuacion"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="#ffffff" />
+        <TextView
+            android:id="@+id/game_over_text"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="left"
+            android:layout_margin="10dp"
+            android:layout_weight="1"
+            android:gravity="left"
+            android:text="@string/game_over_text"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="#ffffff" />
 
-    <TextView
-        android:id="@+id/game_over_text"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/game_over_puntuacion"
-        android:layout_weight="1"
-        android:gravity="center"
-        android:paddingBottom="5dp"
-        android:text="@string/game_over_text"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="#ffffff" />
-
-    <Button
-        android:id="@+id/game_over_share_button"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/game_over_text"
-        android:layout_centerInParent="true"
-        android:layout_weight="2"
-        android:background="@drawable/button_facebook"
-        android:gravity="center"
-        android:onClick="facebookShare"
-        android:padding="5dp"
-        android:text="@string/game_over_textButton"
-        android:textAppearance="@android:style/TextAppearance.Medium"
-        android:textColor="#FFFFFF" />
+        <Button
+            android:id="@+id/game_over_share_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:background="@drawable/button_facebook"
+            android:gravity="center"
+            android:onClick="facebookShare"
+            android:padding="10dp"
+            android:text="@string/game_over_textButton"
+            android:textAppearance="@android:style/TextAppearance.Medium"
+            android:textColor="#FFFFFF" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/game_over_finish_button"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/game_over_share_button"
-        android:layout_centerInParent="true"
-        android:layout_weight="2"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
         android:gravity="center"
         android:onClick="finishGame"
-        android:padding="5dp"
+        android:padding="10dp"
         android:text="@string/game_over_textButtonFinish"
         android:textAppearance="@android:style/TextAppearance.Medium"
         android:textColor="#FFFFFF" />
 
-</RelativeLayout>
+</LinearLayout>

@@ -15,6 +15,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.actionbarsherlock.app.SherlockListFragment;
+import com.j256.ormlite.dao.Dao;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.data.DBHelper;
@@ -40,11 +41,13 @@ public class HighScoresFragment extends SherlockListFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 		return inflater.inflate(R.layout.fragment_high_scores, null);
 	}
 
-	private static class LoadDataAsyncTask extends AsyncTask<Void, Void, List<Score>> {
+	private static class LoadDataAsyncTask extends
+			AsyncTask<Void, Void, List<Score>> {
 
 		private ScoreAdapter adapter;
 
@@ -61,7 +64,17 @@ public class HighScoresFragment extends SherlockListFragment {
 		protected List<Score> doInBackground(Void... params) {
 			List<Score> scores = null;
 			try {
-				scores = DBHelper.getHelper().getDao(Score.class).queryForAll();
+
+				Dao<Score, Integer> dao = DBHelper.getHelper().getDao(
+						Score.class);
+				scores = dao.queryBuilder().orderBy("score", false).query();
+
+				// Solo se mantienen los 10 primeros
+				for (int i = 10; i < scores.size(); ++i) {
+					dao.delete(scores.get(i));
+					scores.remove(i);
+				}
+
 			} catch (SQLException e) {
 				Log.e(HighScoresFragment.TAG, "Error recovering data");
 			}
@@ -80,7 +93,8 @@ public class HighScoresFragment extends SherlockListFragment {
 		LayoutInflater inflater;
 
 		public ScoreAdapter(Context context) {
-			inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			inflater = (LayoutInflater) context
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
 		@Override
@@ -106,12 +120,16 @@ public class HighScoresFragment extends SherlockListFragment {
 
 			if (convertView == null) {
 
-				convertView = inflater.inflate(R.layout.fragment_high_scores_row_layout, parent, false);
+				convertView = inflater
+						.inflate(R.layout.fragment_high_scores_row_layout,
+								parent, false);
 				holder = new ScoreHolder();
 				convertView.setTag(holder);
 
-				holder.user = (TextView) convertView.findViewById(R.id.fragment_high_scores_row_layout_user);
-				holder.score = (TextView) convertView.findViewById(R.id.fragment_high_scores_row_layout_score);
+				holder.user = (TextView) convertView
+						.findViewById(R.id.fragment_high_scores_row_layout_user);
+				holder.score = (TextView) convertView
+						.findViewById(R.id.fragment_high_scores_row_layout_score);
 
 			} else {
 				holder = (ScoreHolder) convertView.getTag();

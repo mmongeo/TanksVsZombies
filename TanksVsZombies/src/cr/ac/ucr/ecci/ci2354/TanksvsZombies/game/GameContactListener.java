@@ -19,10 +19,16 @@ class GameContactListener implements ContactListener {
 
 	// Casos de colisión
 	// Cualquier colisión que lleve ANY debe ir de última
-	private static final int typeA[] = { Game.NORMAL_ZOMBIE_TYPE, Game.BULLET_TYPE, Game.TANK_TYPE, Game.NORMAL_ZOMBIE_TYPE, Game.BULLET_TYPE, Game.ANY_TYPE };
-	private static final int typeB[] = { Game.BULLET_TYPE, Game.NORMAL_ZOMBIE_TYPE, Game.NORMAL_ZOMBIE_TYPE, Game.TANK_TYPE, Game.ANY_TYPE, Game.BULLET_TYPE };
-	private static final boolean killA[] = { true, true, false, true, true, false };
-	private static final boolean killB[] = { true, true, true, false, false, true };
+	private static final int typeA[] = { Game.NORMAL_ZOMBIE_TYPE,
+			Game.BULLET_TYPE, Game.TANK_TYPE, Game.NORMAL_ZOMBIE_TYPE,
+			Game.BULLET_TYPE, Game.ANY_TYPE };
+	private static final int typeB[] = { Game.BULLET_TYPE,
+			Game.NORMAL_ZOMBIE_TYPE, Game.NORMAL_ZOMBIE_TYPE, Game.TANK_TYPE,
+			Game.ANY_TYPE, Game.BULLET_TYPE };
+	private static final boolean killA[] = { true, true, false, true, true,
+			false };
+	private static final boolean killB[] = { true, true, true, false, false,
+			true };
 
 	// Tipo de cada colisión
 	private static final int NZOMBIE_BULLET = 0;
@@ -60,7 +66,8 @@ class GameContactListener implements ContactListener {
 	@Override
 	public void beginContact(Contact contact) {
 
-		Body bodyVector[] = { contact.getFixtureA().getBody(), contact.getFixtureB().getBody() };
+		Body bodyVector[] = { contact.getFixtureA().getBody(),
+				contact.getFixtureB().getBody() };
 		SpriteHolder spriteVector[] = { null, null };
 		for (int i = 0; i < 2; ++i) {
 			if ((SpriteHolder) bodyVector[i].getUserData() != null) {
@@ -101,11 +108,14 @@ class GameContactListener implements ContactListener {
 	}
 
 	// permite nulos en los SpriteHolder
-	private boolean verifyTypes(SpriteHolder a, SpriteHolder b, int typeA, int typeB) {
-		return (a != null && a.type == typeA || typeA == Game.ANY_TYPE) && (b != null && b.type == typeB || typeB == Game.ANY_TYPE);
+	private boolean verifyTypes(SpriteHolder a, SpriteHolder b, int typeA,
+			int typeB) {
+		return (a != null && a.type == typeA || typeA == Game.ANY_TYPE)
+				&& (b != null && b.type == typeB || typeB == Game.ANY_TYPE);
 	}
 
-	private void killSprites(final SpriteHolder a, final SpriteHolder b, final boolean killA, final boolean killB) {
+	private void killSprites(final SpriteHolder a, final SpriteHolder b,
+			final boolean killA, final boolean killB) {
 		weakReference.get().getEngine().runOnUpdateThread(new Runnable() {
 			public void run() {
 				if (killA) {

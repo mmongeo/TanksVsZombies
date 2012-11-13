@@ -1,7 +1,6 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.game;
 
 import org.andengine.engine.camera.Camera;
-import org.andengine.engine.handler.IUpdateHandler;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
 import org.andengine.engine.options.EngineOptions;
@@ -56,15 +55,10 @@ import cr.ac.ucr.ecci.ci2354.TanksvsZombies.game.VerticalParallaxBackground.Vert
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameOverActivity;
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.MainMenuActvity;
 
-
-
 public class GameActivity extends SimpleBaseGameActivity implements
 		IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
 
 	// private static final String TAG = "GameActivity";
-
-	private static final int CAMERA_WIDTH = 360;
-	private static final int CAMERA_HEIGHT = 240;
 
 	private static final int TANK_WIDTH = 50;
 	private static final int TANK_HEIGHT = 50;
@@ -107,28 +101,44 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	private boolean allowBulletCreation = true;
 
 	private MenuScene mMenuScene;
-	private PauseableTimerHandler mTimerOne;
-	private PauseableTimerHandler mTimerTwo;
+	private GameTimerHandler mTimerOne;
+	private GameTimerHandler mTimerTwo;
 
 	@Override
 	public EngineOptions onCreateEngineOptions() {
-		mCamera = new Camera(0, 0, CAMERA_WIDTH, CAMERA_HEIGHT);
-		return new EngineOptions(true, ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(CAMERA_WIDTH, CAMERA_HEIGHT), mCamera);
+		mCamera = new Camera(0, 0, Game.CAMERA_WIDTH, Game.CAMERA_HEIGHT);
+		return new EngineOptions(
+				true,
+				ScreenOrientation.LANDSCAPE_FIXED,
+				new RatioResolutionPolicy(Game.CAMERA_WIDTH, Game.CAMERA_HEIGHT),
+				mCamera);
 	}
 
 	@Override
 	public void onCreateResources() {
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
-		this.mBitmapTextureAtlas = new BitmapTextureAtlas(this.getTextureManager(), 400, 200, TextureOptions.BILINEAR);
-		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "tankTile.png", 0, 0, 6, 4);
-		this.mBulletTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "bullet.png", 301, 0, 1, 1);
-		this.mZombieTexture = BitmapTextureAtlasTextureRegionFactory.createTiledFromAsset(this.mBitmapTextureAtlas, this, "zombieP.png", 321, 0, 1, 1);
+		this.mBitmapTextureAtlas = new BitmapTextureAtlas(
+				this.getTextureManager(), 400, 200, TextureOptions.BILINEAR);
+		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
+						"tankTile.png", 0, 0, 6, 4);
+		this.mBulletTexture = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
+						"bullet.png", 301, 0, 1, 1);
+		this.mZombieTexture = BitmapTextureAtlasTextureRegionFactory
+				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
+						"zombieP.png", 321, 0, 1, 1);
 		this.mBitmapTextureAtlas.load();
 
-		this.mParallaxTexture = new BitmapTextureAtlas(this.getTextureManager(), 512, 1024);
-		this.mBackLayer = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mParallaxTexture, this, "background.png", 0, 0);
-		this.mFrontLayer = BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mParallaxTexture, this, "cactusLayer.png", 0, 512);
+		this.mParallaxTexture = new BitmapTextureAtlas(
+				this.getTextureManager(), 512, 1024);
+		this.mBackLayer = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(this.mParallaxTexture, this, "background.png",
+						0, 0);
+		this.mFrontLayer = BitmapTextureAtlasTextureRegionFactory
+				.createFromAsset(this.mParallaxTexture, this,
+						"cactusLayer.png", 0, 512);
 		// this.mParallaxLayerMid =
 		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAutoParallaxBackgroundTexture,
 		// this, "parallax_background_layer_mid.png", 0, 669);
@@ -156,15 +166,23 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	public Scene onCreateScene() {
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
-		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0, SensorManager.GRAVITY_DEATH_STAR_I), false); // death star
-																											// gravity!!!!
-		VertexBufferObjectManager vertexBufferObjectManager = this.getVertexBufferObjectManager();
+		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0,
+				SensorManager.GRAVITY_DEATH_STAR_I), false); // death star
+																// gravity!!!!
+		VertexBufferObjectManager vertexBufferObjectManager = this
+				.getVertexBufferObjectManager();
 		// AutoParallaxBackground (float pRed, float pGreen, float pBlue, float
 		// pParallaxChangePerSecond)
-		AutoVerticalParallaxBackground autoParallaxBackground = new AutoVerticalParallaxBackground(0, 0, 0, 5);
-		autoParallaxBackground.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f, new Sprite(0, CAMERA_HEIGHT - this.mBackLayer.getHeight(), this.mBackLayer, vertexBufferObjectManager)));
-		autoParallaxBackground.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f,
-						new Sprite(0, CAMERA_HEIGHT
+		AutoVerticalParallaxBackground autoParallaxBackground = new AutoVerticalParallaxBackground(
+				0, 0, 0, 5);
+		autoParallaxBackground
+				.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f,
+						new Sprite(0, Game.CAMERA_HEIGHT
+								- this.mBackLayer.getHeight(), this.mBackLayer,
+								vertexBufferObjectManager)));
+		autoParallaxBackground
+				.attachVerticalParallaxEntity(new VerticalParallaxEntity(-2.0f,
+						new Sprite(0, Game.CAMERA_HEIGHT
 								- this.mFrontLayer.getHeight(),
 								this.mFrontLayer, vertexBufferObjectManager)));
 
@@ -178,45 +196,34 @@ public class GameActivity extends SimpleBaseGameActivity implements
 
 		mPhysicsWorld.setContactListener(new GameContactListener(this, game));
 
-		// Creador de Zombies
-		mTimerOne = new PauseableTimerHandler(DELAY_ZOMBIE, true,
+		// Creadores de Zombies
+		mTimerOne = new GameTimerHandler(DELAY_ZOMBIE, true,
+				new GameITimerCallback(this));
+
+		mTimerTwo = new GameTimerHandler(DELAY_ZOMBIE + 1, true,
+				new GameITimerCallback(this));
+
+		mEngine.registerUpdateHandler(mTimerOne);
+		mEngine.registerUpdateHandler(mTimerTwo);
+
+		mEngine.registerUpdateHandler(new TimerHandler(tiempoDificultad,
 				new ITimerCallback() {
 
 					@Override
 					public void onTimePassed(TimerHandler pTimerHandler) {
-						addZombie((float) (Math.random() * CAMERA_WIDTH), 0f);
+						mTimerOne.setTimerSeconds(mTimerOne.getTimerSeconds() * 0.95f);
+						mTimerTwo.setTimerSeconds(mTimerTwo.getTimerSeconds() * 0.95f);
 					}
-				});
-		
-		mTimerTwo = new PauseableTimerHandler(DELAY_ZOMBIE + 1, true, new ITimerCallback() {
-			
-			@Override
-			public void onTimePassed(TimerHandler pTimerHandler) {
-				addZombie((float) (Math.random() * CAMERA_WIDTH), 0f);
-			}
-		});
-		
-		
-		mEngine.registerUpdateHandler(mTimerOne);
-		mEngine.registerUpdateHandler(mTimerTwo);
-		
-		mEngine.registerUpdateHandler(new TimerHandler(tiempoDificultad, new ITimerCallback() {
-			
-			@Override
-			public void onTimePassed(TimerHandler pTimerHandler) {
-				mTimerOne.setTimerSeconds(mTimerOne.getTimerSeconds() * 0.95f);			
-				mTimerTwo.setTimerSeconds(mTimerTwo.getTimerSeconds() * 0.95f);
-			}
-		}));
+				}));
 		createRectangle();
 
-		addTank(CAMERA_WIDTH / 2 - TANK_WIDTH / 2, CAMERA_HEIGHT - TANK_HEIGHT);
+		addTank(Game.CAMERA_WIDTH / 2 - TANK_WIDTH / 2, Game.CAMERA_HEIGHT
+				- TANK_HEIGHT);
 
 		text = new TickerText(10, 10, this.mFontHUD, REMAINING_LIFES_STRING
 				+ game.getRemainingLife() + "\n" + SCORE_STRING
 				+ game.getScore(), new TickerTextOptions(HorizontalAlign.LEFT,
 				5), this.getVertexBufferObjectManager());
-
 
 		this.mScene.attachChild(text);
 		this.createMenuScene();
@@ -224,8 +231,6 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		return this.mScene;
 	}
 
-	
-	
 	@Override
 	public boolean onAreaTouched(final TouchEvent pSceneTouchEvent,
 			final ITouchArea pTouchArea, final float pTouchAreaLocalX,
@@ -278,10 +283,10 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	}
 
 	private void createRectangle() {
-		int rectanglePX[] = { 0, 0, 0, CAMERA_WIDTH - 2 };
-		int rectanglePY[] = { CAMERA_HEIGHT - 2, 0, 0, 0 };
-		int retangleWidth[] = { CAMERA_WIDTH, CAMERA_WIDTH, 2, 2 };
-		int rectangleHeigth[] = { 2, 2, CAMERA_HEIGHT, CAMERA_HEIGHT };
+		int rectanglePX[] = { 0, 0, 0, Game.CAMERA_WIDTH - 2 };
+		int rectanglePY[] = { Game.CAMERA_HEIGHT - 2, 0, 0, 0 };
+		int retangleWidth[] = { Game.CAMERA_WIDTH, Game.CAMERA_WIDTH, 2, 2 };
+		int rectangleHeigth[] = { 2, 2, Game.CAMERA_HEIGHT, Game.CAMERA_HEIGHT };
 		final VertexBufferObjectManager vertexBufferObjectManager = this
 				.getVertexBufferObjectManager();
 		final FixtureDef wallFixtureDef = PhysicsFactory.createFixtureDef(0,
@@ -310,13 +315,15 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	}
 
 	private void addTank(final float pX, final float pY) {
-		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture, Game.TANK_TYPE, BodyType.DynamicBody);
+		mTank = createAnimatedSprite(100f, pX, pY, mTankTexture,
+				Game.TANK_TYPE, BodyType.DynamicBody);
 		mTank.animate(100);
 		((Body) mTank.getUserData()).setFixedRotation(true);
 	}
 
-	private void addZombie(final float pX, final float pY) {
-		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY, mZombieTexture, Game.NORMAL_ZOMBIE_TYPE, BodyType.KinematicBody);
+	public void addZombie(final float pX, final float pY) {
+		final AnimatedSprite zombie = createAnimatedSprite(0.1f, pX, pY,
+				mZombieTexture, Game.NORMAL_ZOMBIE_TYPE, BodyType.KinematicBody);
 		moveSprite(ZOMBIE_VELOCITY, (Body) zombie.getUserData());
 	}
 
@@ -325,7 +332,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		float pX = mTank.getX() + TANK_WIDTH / 4;
 		float pY = mTank.getY() - TANK_HEIGHT / 2;
 
-		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY, mBulletTexture, Game.BULLET_TYPE, BodyType.DynamicBody);
+		final AnimatedSprite bullet = createAnimatedSprite(0.1f, pX, pY,
+				mBulletTexture, Game.BULLET_TYPE, BodyType.DynamicBody);
 
 		moveSprite(BULLET_VELOCITY, (Body) bullet.getUserData());
 
@@ -345,7 +353,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		Vector2Pool.recycle(vector);
 	}
 
-	private AnimatedSprite createAnimatedSprite(float density, float pX, float pY, TiledTextureRegion t, int type, BodyType bodyType) {
+	private AnimatedSprite createAnimatedSprite(float density, float pX,
+			float pY, TiledTextureRegion t, int type, BodyType bodyType) {
 
 		final FixtureDef objectFixtureDef = PhysicsFactory.createFixtureDef(
 				density, 0.1f, 0.5f);
@@ -353,7 +362,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		AnimatedSprite sprite = new AnimatedSprite(pX, pY, t,
 				this.getVertexBufferObjectManager());
 
-		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld, sprite, bodyType, objectFixtureDef);
+		final Body body = PhysicsFactory.createBoxBody(this.mPhysicsWorld,
+				sprite, bodyType, objectFixtureDef);
 
 		this.mPhysicsWorld.registerPhysicsConnector(new PhysicsConnector(
 				sprite, body, true, true));
