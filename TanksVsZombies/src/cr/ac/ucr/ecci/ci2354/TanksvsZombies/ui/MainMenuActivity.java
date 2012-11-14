@@ -1,19 +1,23 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui;
 
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.ActionBar.Tab;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.R;
 
-public class MainMenuActvity extends SherlockFragmentActivity {
+public class MainMenuActivity extends SherlockFragmentActivity {
 
 	public static final String TABS[] = { "Menú Principal", "Puntajes Altos" };
 
@@ -22,6 +26,8 @@ public class MainMenuActvity extends SherlockFragmentActivity {
 			getSupportFragmentManager());
 	private ViewPager mViewPager;
 	private int mNumTabs = 2;
+	private boolean soundEnabled = true;
+	private MediaPlayer zombieHorde;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,9 +55,68 @@ public class MainMenuActvity extends SherlockFragmentActivity {
 			t.setTabListener(mTabListener);
 			getSupportActionBar().addTab(t);
 		}
+		
+		Boolean b = (Boolean) getLastCustomNonConfigurationInstance();
+		if (b != null) {
+			soundEnabled = b;
+		}
 
+		zombieHorde = MediaPlayer.create(this, R.raw.zombie_horde);
+		
 	}
 
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getSupportMenuInflater().inflate(R.menu.actionbar_menu, menu);
+		MenuItem i = menu.findItem(R.id.options_checkbox);
+		i.setChecked(soundEnabled);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		super.onOptionsItemSelected(item);
+
+		switch (item.getItemId()) {
+		case R.id.options_checkbox:
+			soundEnabled = !soundEnabled;
+			item.setChecked(soundEnabled);
+			if (soundEnabled) {
+				Toast.makeText(getBaseContext(), "El sonido está activado",
+						Toast.LENGTH_SHORT).show();
+			} else {
+				Toast.makeText(getBaseContext(), "El sonido está desactivado",
+						Toast.LENGTH_SHORT).show();
+			}
+
+			break;
+		}
+
+		return true;
+	}
+
+	@Override
+	public Object onRetainCustomNonConfigurationInstance() {
+		return soundEnabled;
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		zombieHorde.seekTo(0);
+		zombieHorde.start();
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onStop();
+		zombieHorde.stop();
+	}
+	
+	public boolean isSoundEnabled() {
+		return soundEnabled;
+	}
+	
 	private static class MainMenuTabListener implements ActionBar.TabListener {
 
 		ViewPager viewPager;

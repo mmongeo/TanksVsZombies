@@ -29,7 +29,9 @@ public class MainMenuFragment extends SherlockFragment {
 
 			@Override
 			public void onClick(View v) {
-				startActivity(new Intent(getActivity(), GameActivity.class));
+				Intent t = new Intent(getActivity(), GameActivity.class);
+				t.putExtra("sound",((MainMenuActivity)getActivity()).isSoundEnabled());
+				startActivity(t);
 				getActivity().finish();
 			}
 		});

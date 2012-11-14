@@ -1,5 +1,11 @@
 package cr.ac.ucr.ecci.ci2354.TanksvsZombies.game;
 
+import java.io.IOException;
+
+import org.andengine.audio.music.Music;
+import org.andengine.audio.music.MusicFactory;
+import org.andengine.audio.sound.Sound;
+import org.andengine.audio.sound.SoundFactory;
 import org.andengine.engine.camera.Camera;
 import org.andengine.engine.handler.timer.ITimerCallback;
 import org.andengine.engine.handler.timer.TimerHandler;
@@ -45,6 +51,7 @@ import org.andengine.util.color.Color;
 import android.content.Intent;
 import android.hardware.SensorManager;
 import android.opengl.GLES20;
+import android.util.Log;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
@@ -53,12 +60,12 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.game.VerticalParallaxBackground.VerticalParallaxEntity;
 import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.GameOverActivity;
-import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.MainMenuActvity;
+import cr.ac.ucr.ecci.ci2354.TanksvsZombies.ui.MainMenuActivity;
 
 public class GameActivity extends SimpleBaseGameActivity implements
 		IAccelerationListener, IOnSceneTouchListener, IOnAreaTouchListener {
 
-	// private static final String TAG = "GameActivity";
+	private static final String TAG = "GameActivity";
 
 	private static final int TANK_WIDTH = 50;
 	private static final int TANK_HEIGHT = 50;
@@ -75,6 +82,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	private static final String SCORE_STRING = "Puntaje: ";
 	private static final float FONT_SIZE_HUD = 12;
 	private static final float FONT_SIZE_MENU = 20;
+
+	private static final String TANK_TILE = "tileCamo.png";
 
 	private BitmapTextureAtlas mBitmapTextureAtlas;
 	private float tiempoDificultad = 1f; // cada 15 segundos se actualiza
@@ -104,14 +113,29 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	private GameTimerHandler mTimerOne;
 	private GameTimerHandler mTimerTwo;
 
+	private Sound tankFire; // Viene de
+							// http://www.freesound.org/people/Cyberkineticfilms/sounds/127845/
+
+	private Music tankRunning; // Viene de http://soundbible.com/1325-Tank.html
+
+	private Sound zombieHit; // Viene de
+								// http://soundbible.com/1033-Zombie-In-Pain.html
+
+	private Sound tankHit; // Viene de http://soundbible.com/947-Metal-Bang.html
+
+	private Music backgroundMusic;
+
 	@Override
 	public EngineOptions onCreateEngineOptions() {
 		mCamera = new Camera(0, 0, Game.CAMERA_WIDTH, Game.CAMERA_HEIGHT);
-		return new EngineOptions(
-				true,
-				ScreenOrientation.LANDSCAPE_FIXED,
-				new RatioResolutionPolicy(Game.CAMERA_WIDTH, Game.CAMERA_HEIGHT),
-				mCamera);
+		EngineOptions options = new EngineOptions(true,
+				ScreenOrientation.LANDSCAPE_FIXED, new RatioResolutionPolicy(
+						Game.CAMERA_WIDTH, Game.CAMERA_HEIGHT), mCamera);
+		options.getAudioOptions().setNeedsSound(true);
+		options.getAudioOptions().setNeedsMusic(true);
+		options.getAudioOptions().getSoundOptions()
+				.setMaxSimultaneousStreams(10);
+		return options;
 	}
 
 	@Override
@@ -119,16 +143,16 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		BitmapTextureAtlasTextureRegionFactory.setAssetBasePath("gfx/");
 
 		this.mBitmapTextureAtlas = new BitmapTextureAtlas(
-				this.getTextureManager(), 400, 200, TextureOptions.BILINEAR);
+				this.getTextureManager(), 500, 300, TextureOptions.BILINEAR);
 		this.mTankTexture = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"tankTile.png", 0, 0, 6, 4);
+						TANK_TILE, 5, 5, 6, 4);
 		this.mBulletTexture = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"bullet.png", 301, 0, 1, 1);
+						"bullet.png", 310, 5, 1, 1);
 		this.mZombieTexture = BitmapTextureAtlasTextureRegionFactory
 				.createTiledFromAsset(this.mBitmapTextureAtlas, this,
-						"zombieP.png", 321, 0, 1, 1);
+						"zombieP.png", 330, 5, 1, 1);
 		this.mBitmapTextureAtlas.load();
 
 		this.mParallaxTexture = new BitmapTextureAtlas(
@@ -139,9 +163,6 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		this.mFrontLayer = BitmapTextureAtlasTextureRegionFactory
 				.createFromAsset(this.mParallaxTexture, this,
 						"cactusLayer.png", 0, 512);
-		// this.mParallaxLayerMid =
-		// BitmapTextureAtlasTextureRegionFactory.createFromAsset(this.mAutoParallaxBackgroundTexture,
-		// this, "parallax_background_layer_mid.png", 0, 669);
 		this.mParallaxTexture.load();
 		// Para la fuente
 
@@ -160,10 +181,42 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		this.mFontHUD.load();
 		this.mFontMenu.load();
 
+		try {
+
+			tankFire = SoundFactory.createSoundFromAsset(getSoundManager(),
+					this, "mfx/tankFire.ogg");
+			zombieHit = SoundFactory.createSoundFromAsset(getSoundManager(),
+					this, "mfx/zombieHit.ogg");
+			tankHit = SoundFactory.createSoundFromAsset(getSoundManager(),
+					this, "mfx/tankHit.ogg");
+			tankRunning = MusicFactory.createMusicFromAsset(getMusicManager(),
+					this, "mfx/tankRunning.ogg");
+			backgroundMusic = MusicFactory.createMusicFromAsset(
+					getMusicManager(), this, "mfx/backgroundMusic.ogg");
+
+			if (getIntent().getExtras().getBoolean("sound")) {
+				tankFire.setVolume(1f);
+				zombieHit.setVolume(1f);
+				tankRunning.setVolume(0.5f);
+				backgroundMusic.setVolume(1f);
+				tankHit.setVolume(1f);
+			} else {
+				tankFire.setVolume(0f);
+				zombieHit.setVolume(0f);
+				tankRunning.setVolume(0f);
+				backgroundMusic.setVolume(0f);
+				tankHit.setVolume(0f);
+			}
+
+		} catch (IOException e) {
+			Log.e(TAG, "Sounds not loaded");
+		}
+
 	}
 
 	@Override
 	public Scene onCreateScene() {
+
 		this.mEngine.registerUpdateHandler(new FPSLogger());
 
 		this.mPhysicsWorld = new PhysicsWorld(new Vector2(0,
@@ -252,6 +305,7 @@ public class GameActivity extends SimpleBaseGameActivity implements
 					@Override
 					public void run() {
 						addBullet();
+						tankFire.play();
 					}
 				});
 
@@ -274,12 +328,18 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	public void onResumeGame() {
 		super.onResumeGame();
 		this.enableAccelerationSensor(this);
+		tankRunning.play();
+		tankRunning.setLooping(true);
+		backgroundMusic.play();
+		backgroundMusic.setLooping(true);
 	}
 
 	@Override
 	public void onPauseGame() {
 		super.onPauseGame();
 		this.disableAccelerationSensor();
+		tankRunning.stop();
+		backgroundMusic.stop();
 	}
 
 	private void createRectangle() {
@@ -307,7 +367,10 @@ public class GameActivity extends SimpleBaseGameActivity implements
 			mTimerOne.resume();
 			mTimerTwo.resume();
 			this.mScene.back();
+			tankRunning.play();
+			tankRunning.setLooping(true);
 		} else {
+			tankRunning.stop();
 			mTimerOne.pause();
 			mTimerTwo.pause();
 			this.mScene.setChildScene(this.mMenuScene, false, true, true);
@@ -328,7 +391,6 @@ public class GameActivity extends SimpleBaseGameActivity implements
 	}
 
 	private void addBullet() {
-
 		float pX = mTank.getX() + TANK_WIDTH / 4;
 		float pY = mTank.getY() - TANK_HEIGHT / 2;
 
@@ -398,8 +460,16 @@ public class GameActivity extends SimpleBaseGameActivity implements
 		finish();
 	}
 
+	public void zombieKilled() {
+		zombieHit.play();
+	}
+
+	public void tankHit() {
+		tankHit.play();
+	}
+	
 	public void mainMenu() {
-		Intent intent = new Intent(this, MainMenuActvity.class);
+		Intent intent = new Intent(this, MainMenuActivity.class);
 		startActivity(intent);
 		finish();
 	}
@@ -429,11 +499,8 @@ public class GameActivity extends SimpleBaseGameActivity implements
 				GLES20.GL_ONE_MINUS_SRC_ALPHA);
 
 		mMenuScene.addMenuItem(quitMenuItem);
-
 		mMenuScene.buildAnimations();
-
 		mMenuScene.setBackgroundEnabled(false);
-
 		mMenuScene.setOnMenuItemClickListener(new ItemListener());
 
 	}

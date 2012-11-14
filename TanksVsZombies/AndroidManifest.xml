@@ -41,7 +41,7 @@
             android:label="@string/game_title" >
         </activity>
         <activity
-            android:name=".ui.MainMenuActvity"
+            android:name=".ui.MainMenuActivity"
             android:label="@string/game_title" >
         </activity>
         <activity

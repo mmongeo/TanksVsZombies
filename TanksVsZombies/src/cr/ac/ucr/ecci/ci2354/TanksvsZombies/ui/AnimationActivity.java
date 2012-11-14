@@ -63,7 +63,7 @@ public class AnimationActivity extends SherlockActivity {
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
 			startActivity(new Intent(getApplicationContext(),
-					MainMenuActvity.class));
+					MainMenuActivity.class));
 		}
 		return super.onTouchEvent(event);
 	}

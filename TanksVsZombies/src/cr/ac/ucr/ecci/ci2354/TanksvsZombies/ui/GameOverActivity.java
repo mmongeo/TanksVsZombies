@@ -76,7 +76,7 @@ public class GameOverActivity extends SherlockFragmentActivity {
 	}
 
 	public void finishGame(View view) {
-		startActivity(new Intent(getApplicationContext(), MainMenuActvity.class));
+		startActivity(new Intent(getApplicationContext(), MainMenuActivity.class));
 		finish();
 	}
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/Theme.Sherlock" >
+
+    <item
+        android:id="@+id/options_checkbox"
+        android:title="@string/actionbar_settings"
+        android:checkable="true"
+        style="@style/Theme.Sherlock"/>
+
+</menu>

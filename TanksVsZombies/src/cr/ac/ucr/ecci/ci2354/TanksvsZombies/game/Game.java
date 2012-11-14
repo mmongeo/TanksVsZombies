@@ -38,11 +38,13 @@ public class Game {
 	public void increaseScore(int points) {
 		score += points;
 		weakReference.get().updateText();
+		weakReference.get().zombieKilled();
 	}
 
 	public void decreaseLife() {
 		--lifes;
 		weakReference.get().updateText();
+		weakReference.get().tankHit();
 		if (lifes == 0) {
 			weakReference.get().gameOver();
 		}
