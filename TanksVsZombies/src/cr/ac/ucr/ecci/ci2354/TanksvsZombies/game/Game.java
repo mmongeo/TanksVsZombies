@@ -7,6 +7,9 @@ public class Game {
 	// Tamaño de la pantalla
 	public static final int CAMERA_WIDTH = 360;
 	public static final int CAMERA_HEIGHT = 240;
+	
+	// Tamaño zombies
+	public static final int ZOMBIE_WIDTH = 24;
 
 	// Tipos de objetos en pantalla
 	public static final int ANY_TYPE = 0;

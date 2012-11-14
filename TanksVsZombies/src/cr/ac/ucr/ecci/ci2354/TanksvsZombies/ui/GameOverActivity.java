@@ -37,20 +37,33 @@ public class GameOverActivity extends SherlockFragmentActivity {
 	public static final String EXPIRES = "expires_in";
 	public static final String KEY = "facebook-credentials";
 
+	private static final String USER_DIALOG = "UserDialog";
+	private boolean firstResume = true;
+
 	private Facebook facebook;
 	private AsyncFacebookRunner mAsyncRunner;
-	private boolean firstResume = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_game_over);
 		facebook = new Facebook(ID_APP);
+		
+		Boolean b = (Boolean) getLastCustomNonConfigurationInstance();
+		if (b != null) {
+			firstResume = b;
+		}
+		
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
+		UserDialogFragment u = (UserDialogFragment) getSupportFragmentManager()
+				.findFragmentByTag(USER_DIALOG);
+		if (u != null) {
+			u.dettach();
+		}
 	}
 
 	public void facebookShare(View view) {
@@ -131,7 +144,13 @@ public class GameOverActivity extends SherlockFragmentActivity {
 		if (firstResume) {
 			firstResume = false;
 			DialogFragment d = UserDialogFragment.newInstance(this);
-			d.show(getSupportFragmentManager(), "dialog");
+			d.show(getSupportFragmentManager(), USER_DIALOG);
+		} else {
+			UserDialogFragment u = (UserDialogFragment) getSupportFragmentManager()
+					.findFragmentByTag(USER_DIALOG);
+			if (u != null) {
+				u.attach(this);
+			}
 		}
 	}
 
@@ -181,23 +200,28 @@ public class GameOverActivity extends SherlockFragmentActivity {
 	}
 
 	public void userNameChoosed(String user) {
-		
+
 		Score score = new Score();
 		score.setScore(getIntent().getIntExtra("puntuacion", 0));
 		score.setUser(user);
 
 		TextView scoreTextView = (TextView) findViewById(R.id.game_over_score);
 		scoreTextView.setText("" + score.getScore());
-		
+
 		TextView userTextView = (TextView) findViewById(R.id.game_over_username_text);
 		userTextView.setText(user);
-		
+
 		try {
 			Dao<Score, Integer> dao = DBHelper.getHelper().getDao(Score.class);
 			dao.createOrUpdate(score);
 		} catch (Exception e) {
 			Log.d(TAG, "Error updating DB");
 		}
+	}
+
+	@Override
+	public Object onRetainCustomNonConfigurationInstance() {
+		return firstResume;
 	}
 
 }

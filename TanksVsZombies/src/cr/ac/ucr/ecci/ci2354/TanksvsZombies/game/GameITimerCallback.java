@@ -16,7 +16,7 @@ public class GameITimerCallback implements ITimerCallback {
 	@Override
 	public void onTimePassed(TimerHandler pTimerHandler) {
 		weakReference.get().addZombie(
-				(float) (Math.random() * Game.CAMERA_WIDTH), 0f);
+				(float) (Math.random() * (Game.CAMERA_WIDTH - Game.ZOMBIE_WIDTH)), 0f);
 	}
 
 	public void attach(GameActivity activity) {
