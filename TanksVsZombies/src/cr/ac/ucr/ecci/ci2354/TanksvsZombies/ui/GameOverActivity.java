@@ -42,6 +42,7 @@ public class GameOverActivity extends SherlockFragmentActivity {
 
 	private Facebook facebook;
 	private AsyncFacebookRunner mAsyncRunner;
+	private Score score = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -49,9 +50,20 @@ public class GameOverActivity extends SherlockFragmentActivity {
 		setContentView(R.layout.activity_game_over);
 		facebook = new Facebook(ID_APP);
 		
-		Boolean b = (Boolean) getLastCustomNonConfigurationInstance();
-		if (b != null) {
-			firstResume = b;
+		ConfigurationHolder cf = (ConfigurationHolder) getLastCustomNonConfigurationInstance();
+		if (cf != null) {
+			firstResume = cf.firstResume;
+			score = cf.score;
+			
+			if (score != null) {
+				
+				TextView scoreTextView = (TextView) findViewById(R.id.game_over_score);
+				scoreTextView.setText("" + score.getScore());
+
+				TextView userTextView = (TextView) findViewById(R.id.game_over_username_text);
+				userTextView.setText("" + score.getUser());
+				
+			}
 		}
 		
 	}
@@ -217,11 +229,21 @@ public class GameOverActivity extends SherlockFragmentActivity {
 		} catch (Exception e) {
 			Log.d(TAG, "Error updating DB");
 		}
+		
+		this.score = score;
 	}
 
 	@Override
 	public Object onRetainCustomNonConfigurationInstance() {
-		return firstResume;
+		ConfigurationHolder c = new ConfigurationHolder();
+		c.firstResume = firstResume;
+		c.score = this.score;
+		return c;
+	}
+	
+	private static class ConfigurationHolder {
+		public Score score = null;
+		public boolean firstResume = false;
 	}
 
 }

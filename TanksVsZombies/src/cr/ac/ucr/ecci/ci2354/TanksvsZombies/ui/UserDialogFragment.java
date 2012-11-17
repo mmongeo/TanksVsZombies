@@ -54,7 +54,7 @@ public class UserDialogFragment extends DialogFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		this.getDialog().setTitle("Digite su nombre de usuario");
+		this.getDialog().setTitle("Digite su nombre");
 	}
 	
 	public void attach(GameOverActivity activity) {
